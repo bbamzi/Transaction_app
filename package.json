@@ -1,0 +1,50 @@
+{
+  "name": "invoice_app",
+  "version": "1.0.0",
+  "description": "creating invoice and receipt app",
+  "main": "app.js",
+  "scripts": {
+    "start": "nodemon app.js",
+    "start:prod": "NODE_ENV=production nodemon app.js",
+    "debug": "ndb app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bbamzi/invoice_app.git"
+  },
+  "author": "Akinbode Bamigboye",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/bbamzi/invoice_app/issues"
+  },
+  "homepage": "https://github.com/bbamzi/invoice_app#readme",
+  "dependencies": {
+    "axios": "^0.27.2",
+    "bcryptjs": "^2.4.3",
+    "cookie-parser": "^1.4.6",
+    "dotenv": "^16.0.1",
+    "es": "^0.8.0",
+    "eslint-plugin-jsx-a11y": "^6.5.1",
+    "express": "^4.18.1",
+    "express-mongo-sanitize": "^2.2.0",
+    "express-rate-limit": "^6.4.0",
+    "helmet": "^5.1.0",
+    "install": "^0.13.0",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^6.3.6",
+    "morgan": "^1.10.0",
+    "nodemailer": "^6.7.5",
+    "pug": "^3.0.2",
+    "validator": "^13.7.0",
+    "xss-clean": "^0.1.1"
+  },
+  "devDependencies": {
+    "eslint": "^8.17.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-react": "^7.30.0",
+    "prettier": "^2.6.2"
+  }
+}

@@ -1,0 +1,154 @@
+extends layouts/main-Layout
+
+block content 
+  
+  
+  h1 invoice app
+  div
+    input.receipt(type='button' value='Receipt')
+    input.invoice(type='button' value='Invoice')
+  form(action='/' method="POST")
+    .form-control
+
+      // ############################### Receipt ##################################
+      div(class='receipt_page' style='display: block')
+        h3 receipt goes here
+        .logo
+          label logo goes here
+          input(type='file')
+        // business name
+        div(class=receipt_business_name)
+          label Business Name
+          input(type='text' name='receipt_business_name')
+        // Recipient name
+        div(class=receipient_business_name)
+          label Recipient&apos;s Name
+          input(type='text' name='receipient_business_name')
+        div(class=receipt_recipient_address)
+          label Recipient&apos;s Address
+          input(type='text' name='receipt_recipient_address')
+        // Receipt number
+        div(class=receipt_number)
+          label Receipt Number
+          input(type='text' name='receipt_number')
+        // Date Created
+        .date
+          label Select Date
+          input(type='text' name='receipt_date_created')
+        div(class=receipt_payment_method)
+          label Payment Method
+          select(name='receipt_payment_method')
+            option() Bank Transfer
+            option() Mobile Deposit
+            option() other
+          label If Other
+          input(type='text')
+        // items
+        div(class='receipt_item')
+          div
+            label Description
+            textarea(name='description' cols='20' rows='2')
+          div
+            label Unit/Quantity
+            input(name='Unit')
+          div
+            label Price
+            input(type='text' name='price')
+            br
+        input(type='button' value='add item' id='add_receipt_items')
+        div(class='supplementary_items')
+          div
+            label Shipping 📦
+            input(name='Shipping')
+          div
+            label VAT 
+            input(name='vat')
+          div
+            label Discount
+            input(type='text' name='discount')
+        .totals
+          div
+            label Sub Total
+            input(type='text' name='sub_total')
+          div
+            label Total
+            input(type='text' name='total')
+        //- div
+        //-   input(type='button' name='receipt_add_signature' id= value='Add Signature')
+      // ############################### Invoice ##################################
+      div(class='invoice_page' style='display: none')
+        h3 invoice goes here
+        // logo
+        .logo
+          label logo goes here
+          input(type='file')
+        // business name
+        div(class=business_name)
+          label Business Name
+          input(type='text' name='business_name')
+        // Recipient name
+        div(class=Recipient_name)
+          label Recipient&apos;s Name
+          input(type='text' name='Recipient_name')
+        // invoice number
+        div(class=invoice_number)
+          label Invoice Number
+          input(type='text' name='invoice_number')
+        // Date Created
+        .date
+          label Date
+          input(type='text' name='date_created')
+        // Payment Due Date
+        .date
+          label Due Date
+          input(type='text' name='due_date')
+        // forms of payment
+        div(class=payment_method)
+          label Payment Method
+          select(name='payment_method')
+            option() Bank Transfer
+            option() Mobile Deposit
+            option() Other
+          label If Other:
+          input(type='text' name='invoice_if_other')
+        // items
+        div(class='invoice_item')
+          div
+            label Description
+            textarea(name='description' cols='20' rows='2')
+          div
+            label Unit/Quantity
+            input(name='Unit')
+          div
+            label Price
+            input(type='text' name='price')
+        br
+        input(type='button' value='add item' id='add_invoice_items')
+        div
+          div(class='supplementary_items')
+            label Shipping 📦
+            input(name='Shipping')
+          div
+            label VAT 
+            input(name='vat')
+          div
+            label Discount
+            input(type='text' name='discount')
+        .totals
+          div
+            label Sub Total
+            input(type='text' name='sub_total')
+          div
+            label Total
+            input(type='text' name='total')
+
+      br
+      div
+        input(type='button' name='invoice_add_signature'  value='Add Signature')
+      
+        input(type='submit' value='Preview')
+
+        button(type="submit") Submit 
+  script(src="/js/script.js") 
+  
+
