@@ -2,17 +2,12 @@ const express = require("express");
 const router = express.Router();
 const transactionController = require("../controllers/transaction");
 
+// index page(to view form)
 router.get("/", transactionController.getAddTransaction);
 
+// index page(to post form)
 router.post("/", transactionController.postAddTransaction);
 
-router.get("/transactions", (req, res, next) => {
-  const transactions = [];
-  res.render("transactions", {
-    transactions: transactions,
-    pageTitle: "All Transactions",
-    hasTransactions: transactions > 0,
-  });
-});
+router.get("/transactions", transactionController.getTransactions);
 
 module.exports = router;

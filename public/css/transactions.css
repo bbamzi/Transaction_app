@@ -1,11 +1,11 @@
-.product-form {
+.transaction-form {
   width: 20rem;
   max-width: 90%;
   margin: auto;
   display: block;
 }
 
-.product-item {
+.transaction-item {
   width: 20rem;
   max-width: 95%;
   margin: 1rem;
@@ -16,12 +16,12 @@
   text-align: center;
 }
 
-.product__price {
+.transaction__price {
   text-align: center;
   color: #4d4d4d;
   margin-bottom: 0.5rem;
 }
 
-.product__description {
+.transaction__description {
   text-align: center;
 }
