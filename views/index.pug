@@ -9,10 +9,10 @@ block content
   input.invoice(type="button", value="Invoice")
   // Form
   form(action="/", method="POST")
-  input(type="hidden", name="serviceType", value="" id="service_type_hidden" )
+    input(type="hidden", name="serviceType", value="Reciept" id="service_type_hidden" )
   
    
-  .form-control
+    .form-control
     // logo
     .logo
       label Your Brand Logo
@@ -24,54 +24,54 @@ block content
       // Brand name
       div(class="brand_name")
         label Your Brand Name
-        input(type="text", name="brand_name")
+        input(type="text", name="brandName")
       // Date Issued
       .date
         label Date Issued
-        input(type="text", name="receipt_date_issued")
+        input(type="text", name="dateIssued")
       // Payment Due Date
       .date.invoice_visibility
         label Due Date
-        input(type="text", name="due_date")
+        input(type="text", name="dueDate")
       // Receipt number
       div
         label Document Number
-        input(type="text", name="receipt_number")
+        input(type="text", name="documentNumber")
       // Recipient name
       div.receipt_visibility
-        label Recipient Name
-        input(type="text", name="Recipient_name")
+        label Customer's Details
+        textarea(name="recipientName", cols="20", rows="2")
 
       div.invoice_visibility
         label Bill To
-        textarea(name="bill_to", cols="20", rows="2")
+        textarea(name="billTo", cols="20", rows="2")
       br
       //- payment method for receipt
       .receipt_visibility
         label Payment Method
-        select(name="receipt_payment_method")
+        select(name="paymentMethod")
           option Bank Transfer
           option Mobile Deposit
           option other
         label If Other
-        input(type="text")
+        input(type="text" name="paymentIfOther")
       br
       //- payment details for invoice 
       div.invoice_visibility
         h3 Payment Details 
         label Account 
-        input(type="text" , name="account_details") 
+        input(type="text" , name="invoicePaymentDetails") 
         label A/c Name 
-        input(type="text", name="account_name")
+        input(type="text", name="invoicePaymentDetails")
         label Bank Details 
-        input(type="text", name="bank_name" , placeholder="Add your Bank Name")
+        input(type="text", name="invoicePaymentDetails" , placeholder="Add your Bank Name")
       // items
       div(class="items")
         div
           label Description
           textarea(name="description", cols="20", rows="2")
           label Unit/Quantity
-          input(name="Unit")
+          input(name="unit")
           label Price
           input(type="text", name="price")
           br
@@ -90,14 +90,17 @@ block content
         div
           label Sub Total
           input(type="text", name="sub_total")
-        div
+        div 
           label Total
           input(type="text", name="total")
+        div 
+          label Currency
+          input(type="text",name="currency") 
 
     br
     div
       input(type="button", name="invoice_add_signature", value="Add Signature")
-      input(type="submit", value="Preview")
+      input(type="button", value="Preview")
       button(type="submit") Submit
   script(src="/js/script.js")
    
