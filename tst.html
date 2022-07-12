@@ -1,11 +1,119 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-    <link rel="stylesheet" href="" />
-  </head>
-  <body></body>
-</html>
+<h1>app</h1>
+
+<input class="receipt" type="button" value="Receipt" />
+<input class="invoice" type="button" value="Invoice" />
+
+<!--                      Form                        -->
+<form action="/" method="POST"></form>
+<div class="form-control">
+  <!-- logo -->
+  <div class="logo">
+    <label>Your Brand Logo</label>
+    <input type="file" name="logo" />
+  </div>
+
+  <!-- receipt and invoice  -->
+  <div class="receipt_page" style="display: block">
+    <h3>Receipt</h3>
+    <h3 class="invoice-hide">Invoice</h3>
+
+    <!-- Brand name-->
+    <div class="brand_name">
+      <label>Your Brand Name</label>
+      <input type="text" name="brand_name" />
+    </div>
+    <!-- Date Issued-->
+    <div class="date">
+      <label>Date Issued</label>
+      <input type="text" name="receipt_date_issued" />
+    </div>
+    <!-- Payment Due Date-->
+    <div class="date invoice-hide">
+      <label>Due Date</label>
+      <input type="text" name="due_date" />
+    </div>
+    <!-- Receipt number-->
+    <div>
+      <label>Document Number</label>
+      <input type="text" name="receipt_number" />
+    </div>
+    <!-- Recipient name-->
+    <div>
+      <label>Recipient&apos;s Name</label>
+      <input type="text" name="Recipient_name" />
+    </div>
+    <div class="invoice-hide">
+      <label>Bill To</label>
+      <textarea name="bill_to" cols="20" rows="2"></textarea>
+    </div>
+    <br />
+    <div>
+      <label>Payment Method</label>
+      <select name="receipt_payment_method">
+        <option>Bank Transfer</option>
+        <option>Mobile Deposit</option>
+        <option>other</option>
+      </select>
+      <label>If Other</label>
+      <input type="text" />
+    </div>
+
+    <br />
+
+    <!-- items-->
+    <div class="receipt_item">
+      <div>
+        <label>Description</label>
+        <textarea name="description" cols="20" rows="2"></textarea>
+        <label>Unit/Quantity</label>
+        <input name="Unit" />
+        <label>Price</label>
+        <input type="text" name="price" /><br />
+      </div>
+    </div>
+    <br />
+    <input type="button" value="add item" id="add_receipt_items" />
+    <br />
+    <div class="supplementary_items">
+      <div>
+        <label>Shipping </label>
+        <input name="Shipping" />
+        <label>VAT </label>
+        <input name="vat" />
+        <label>Discount</label>
+        <input type="text" name="discount" />
+      </div>
+    </div>
+    <div class="totals">
+      <div>
+        <label>Sub Total</label>
+        <input type="text" name="sub_total" />
+      </div>
+      <div>
+        <label>Total</label>
+        <input type="text" name="total" />
+      </div>
+    </div>
+  </div>
+  <!-- ############################### Invoice ##################################-->
+  <!-- <div class="invoice_page" style="display: block">
+    <input type="hidden" name="" value="Invoice" id="invoice_hidden" />
+    <h3>Invoice</h3>
+
+  
+  </div> -->
+  <br />
+  <div>
+    <input type="button" name="invoice_add_signature" value="Add Signature" />
+    <input type="submit" value="Preview" />
+    <button type="submit">Submit</button>
+  </div>
+</div>
+<script src="/js/script.js"></script>
+
+<!-- <input
+      type="hidden"
+      name="serviceType"
+      value="Receipt"
+      id="receipt_hidden"
+    /> -->

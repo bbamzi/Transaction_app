@@ -1,63 +1,46 @@
-'use strict';
-const add_receipt_items = document.querySelector('#add_receipt_items');
-const add_invoice_items = document.querySelector('#add_invoice_items');
-const invoicePage = document.querySelector('.invoice_page');
-const receiptPage = document.querySelector('.receipt_page');
-const invoice_item = document.querySelector('.invoice_item');
-const receipt_item = document.querySelector('.receipt_item');
-const selectReceiptBtn = document.querySelector('.receipt');
-const selectInvoiceBtn = document.querySelector('.invoice');
+"use strict";
 
-// console.log(add_receipt_items);
+const addItemsBtn = document.querySelector("#addItems");
+const items = document.querySelector(".items");
+const selectReceiptBtn = document.querySelector(".receipt");
+const selectInvoiceBtn = document.querySelector(".invoice");
+const serviceType = document.querySelector("#service_type_hidden");
 
-add_receipt_items.addEventListener('click', function (e) {
+addItemsBtn.addEventListener("click", function (e) {
   e.preventDefault();
 
-  const html = `  <div class="${add_receipt_items}">
-      <div>
-        <label>Description</label>
-        <textarea name="description" cols="20" rows="2"></textarea>
-      </div>
-      <div>
-        <label>Unit/Quantity</label>
-        <input name="Unit" />
-      </div>
-      <div>
-        <label>Price</label>
-        <input type="text" name="price" />
-      </div>
-    </div>`;
-  receipt_item.insertAdjacentHTML('afterend', html);
+  const html = `  <div class="${items}">
+  <div>
+  <label>Description</label>
+  <textarea name="description" cols="20" rows="2"></textarea>
+  <label>Unit/Quantity</label>
+  <input name="Unit"/>
+  <label>Price</label>
+  <input type="text" name="price"/><br/>
+</div>`;
+  items.insertAdjacentHTML("afterend", html);
 });
 
-add_invoice_items.addEventListener('click', function (e) {
-  e.preventDefault();
-
-  const html = `  <div class="${add_invoice_items}">
-      <div>
-        <label>Description</label>
-        <textarea name="description" cols="20" rows="2"></textarea>
-      </div>
-      <div>
-        <label>Unit/Quantity</label>
-        <input name="Unit" />
-      </div>
-      <div>
-        <label>Price</label>
-        <input type="text" name="price" />
-      </div>
-    </div>`;
-  invoice_item.insertAdjacentHTML('afterend', html);
-});
-selectInvoiceBtn.addEventListener('click', function (e) {
-  e.preventDefault();
-  receiptPage.style.display = 'none';
-  invoicePage.style.display = 'block';
-  console.log('hi');
+selectInvoiceBtn.addEventListener("click", function (e) {
+  service_type_hidden.value = "Invoice";
+  const invoice_visibility = document.querySelectorAll(".invoice_visibility");
+  invoice_visibility.forEach((item) => {
+    item.style.display = "block";
+  });
+  const receipt_visibility = document.querySelectorAll(".receipt_visibility");
+  receipt_visibility.forEach((item) => {
+    item.style.display = "none";
+  });
 });
 
-selectReceiptBtn.addEventListener('click', function (e) {
-  e.preventDefault();
-  receiptPage.style.display = 'block';
-  invoicePage.style.display = 'none';
+selectReceiptBtn.addEventListener("click", function (e) {
+  service_type_hidden.value = "Receipt";
+  const receipt_visibility = document.querySelectorAll(".receipt_visibility");
+  receipt_visibility.forEach((item) => {
+    item.style.display = "block";
+    const invoice_visibility = document.querySelectorAll(".invoice_visibility");
+    invoice_visibility.forEach((item) => {
+      item.style.display = "none";
+    });
+  });
 });
