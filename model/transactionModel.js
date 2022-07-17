@@ -26,7 +26,6 @@ const transactionSchema = new mongoose.Schema({
     trim: true,
   },
   paymentMethod: { type: String, trim: true },
-  paymentIfOther: { type: String, trim: true },
   invoicePaymentDetails: { type: String, trim: true },
   items: { type: Array, default: [] },
   currency: { type: String },

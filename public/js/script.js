@@ -6,7 +6,8 @@ const selectReceiptBtn = document.querySelector(".receipt");
 const selectInvoiceBtn = document.querySelector(".invoice");
 const serviceType = document.querySelector("#service_type_hidden");
 const checkbox = document.querySelector("input[name=autoGenerate]");
-// const autoGenerate = document.getElementById("autoGenerate");
+const paymentMethodSelect = document.getElementById("paymentMethodSelect");
+const paymentIfOther = document.getElementById("paymentIfOther");
 
 addItemsBtn.addEventListener("click", function (e) {
   e.preventDefault();
@@ -60,5 +61,14 @@ checkbox.addEventListener("change", function () {
       nums[0].toUpperCase() + nums.slice(1);
   } else {
     document.getElementById("documentNumber").value = "";
+  }
+});
+
+paymentMethodSelect.addEventListener("change", function (e) {
+  if (this.value === "other") {
+    paymentIfOther.disabled = false;
+    paymentIfOther.focus();
+  } else {
+    paymentIfOther.disabled = true;
   }
 });

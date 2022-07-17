@@ -48,8 +48,9 @@ exports.postAddTransaction = (req, res, next) => {
     }
     return itemObj;
   };
+  const paymentMethodSetter =
+    paymentMethod === "other" ? paymentIfOther : paymentMethod;
 
-  console.log(documentNumberGenerator(autoGenerate));
   const transaction = new Transaction({
     serviceType,
     logo,
@@ -59,8 +60,7 @@ exports.postAddTransaction = (req, res, next) => {
     documentNumber,
     recipientName,
     billTo,
-    paymentMethod,
-    paymentIfOther,
+    paymentMethod: paymentMethodSetter,
     invoicePaymentDetails: invoicePaymentDetails.toString(),
     items: itemPopulate(description, unit, price),
     currency,

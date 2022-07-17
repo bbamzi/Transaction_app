@@ -51,12 +51,12 @@ block content
       //- payment method for receipt
       .receipt_visibility
         label Payment Method
-        select(name="paymentMethod")
+        select(name="paymentMethod" id="paymentMethodSelect")
           option Bank Transfer
           option Mobile Deposit
           option other
         label If Other
-        input(type="text" name="paymentIfOther")
+        input(type="text" name="paymentIfOther" id="paymentIfOther" disabled)
       br
       //- payment details for invoice 
       div.invoice_visibility
