@@ -42,7 +42,7 @@ block content
       // Recipient name
       div.receipt_visibility
         label Customer's Details
-        textarea(name="recipientName", cols="20", rows="2")
+        textarea(name="recipientName", cols="20", rows="3" placeholder="Name\nAddress\nContact")
 
       div.invoice_visibility
         label Bill To
@@ -71,7 +71,7 @@ block content
       div(class="items")
         div
           label Description
-          textarea(name="description", cols="20", rows="2")
+          textarea(name="description", cols="20", rows="2" )
           label Unit/Quantity
           input(name="unit")
           label Price

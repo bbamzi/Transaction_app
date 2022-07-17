@@ -51,7 +51,7 @@ exports.postAddTransaction = (req, res, next) => {
   const paymentMethodSetter =
     paymentMethod === "other" ? paymentIfOther : paymentMethod;
 
-  const transaction = new Transaction({
+  const recieptTransaction = new Transaction({
     serviceType,
     logo,
     brandName,
@@ -59,6 +59,23 @@ exports.postAddTransaction = (req, res, next) => {
     dueDate,
     documentNumber,
     recipientName,
+    paymentMethod: paymentMethodSetter,
+    items: itemPopulate(description, unit, price),
+    currency,
+    shippingFee,
+    vat,
+    discount,
+    sub_total,
+    total,
+    clientSignature,
+  });
+
+  const invoiceTransaction = new Transaction({
+    serviceType,
+    logo,
+    brandName,
+    dateIssued,
+    documentNumber,
     billTo,
     paymentMethod: paymentMethodSetter,
     invoicePaymentDetails: invoicePaymentDetails.toString(),
@@ -71,6 +88,8 @@ exports.postAddTransaction = (req, res, next) => {
     total,
     clientSignature,
   });
+  const transaction =
+    serviceType === "Receipt" ? recieptTransaction : invoiceTransaction;
 
   transaction
     .save()
