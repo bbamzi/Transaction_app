@@ -14,6 +14,7 @@ exports.postAddTransaction = (req, res, next) => {
     dateIssued,
     dueDate,
     documentNumber,
+    autoGenerate,
     recipientName,
     billTo,
     paymentMethod,
@@ -30,35 +31,25 @@ exports.postAddTransaction = (req, res, next) => {
     total,
     clientSignature,
   } = req.body;
-  // const serviceType = req.body.serviceType;
-  // const logo = req.body.logo;
-  // const brandName = req.body.brandName;
-  // const dateIssued = req.body.dateIssued;
-  // const dueDate = req.body.dueDate;
-  // const documentNumber = req.body.documentNumber;
-  // const recipientName = req.body.recipientName;
-  // const billTo = req.body.billTo;
-  // const paymentMethod = req.body.paymentMethod;
-  // const paymentIfOther = req.body.paymentIfOther;
-  // const invoicePaymentDetails = req.body.invoicePaymentDetails;
-  // const description = req.body.description;
-  // const unit = req.body.unit;
-  // const price = req.body.price;
-  // const currency = req.body.currency;
-  // const shippingFee = req.body.shippingFee;
-  // const vat = req.body.vat;
-  // const discount = req.body.discount;
-  // const sub_total = req.body.sub_total;
-  // const total = req.body.total;
-  // const clientSignature = req.body.clientSignature;
-  const listItems = [description, unit, price];
-  listItems.forEach((ele) => {});
-  let itemsObj = {
-    description: String(description),
-    unit: +unit,
-    price: +price,
+
+  const itemPopulate = (description, unit, price) => {
+    const itemObj = [];
+    if (typeof description === "string") {
+      itemObj.push({ description, unit, price });
+    } else {
+      for (let index = 0; index < description.length; index++) {
+        const item = {
+          description: description[index],
+          unit: unit[index],
+          price: price[index],
+        };
+        itemObj.push(item);
+      }
+    }
+    return itemObj;
   };
-  console.log(listItems);
+
+  console.log(documentNumberGenerator(autoGenerate));
   const transaction = new Transaction({
     serviceType,
     logo,
@@ -71,7 +62,7 @@ exports.postAddTransaction = (req, res, next) => {
     paymentMethod,
     paymentIfOther,
     invoicePaymentDetails: invoicePaymentDetails.toString(),
-    items: itemsObj,
+    items: itemPopulate(description, unit, price),
     currency,
     shippingFee,
     vat,
@@ -80,18 +71,14 @@ exports.postAddTransaction = (req, res, next) => {
     total,
     clientSignature,
   });
-  console.log(transaction);
 
-  console.log(req.body);
-  // transaction
-  //   .save()
-  //   .then((result) => {
-  //     console.log("Created Transaction");
-  //     res.redirect("/");
-  //   })
-  //   .catch((err) => {
-  //     console.log(err);
-  //   });
+  transaction
+    .save()
+    .then((result) => {
+      console.log("Created Transaction");
+      res.redirect("/");
+    })
+    .catch((err) => {});
 };
 
 const transactions = [];
