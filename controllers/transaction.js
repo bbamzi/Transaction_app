@@ -100,12 +100,28 @@ exports.postAddTransaction = (req, res, next) => {
     .catch((err) => {});
 };
 
-const transactions = [];
 exports.getTransactions = (req, res, next) => {
-  res.render("transactions", {
-    transactions: transactions,
-    pageTitle: "All Transactions",
-    hasTransactions: transactions > 0,
+  Transaction.find()
+    .then((transactions) => {
+      res.render("transactions", {
+        transactions,
+        pageTitle: "All Transactions",
+        hasTransactions: transactions > 0,
+      });
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+  console.log(req);
+};
+
+exports.getTransaction = (req, res, next) => {
+  const transactionId = req.params.transactionId;
+  Transaction.findById(transactionId).then((transaction) => {
+    res.render("transaction", {
+      transaction,
+      pageTitle: transaction.documentNumber,
+    });
   });
 };
 // exports.updateTransaction = factory.updateOne(Transaction);

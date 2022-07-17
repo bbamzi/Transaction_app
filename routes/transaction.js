@@ -10,4 +10,6 @@ router.post("/", transactionController.postAddTransaction);
 
 router.get("/transactions", transactionController.getTransactions);
 
+router.get("/transaction/:transactionId", transactionController.getTransaction);
+
 module.exports = router;
