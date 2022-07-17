@@ -22,21 +22,23 @@ block content
       h3.receipt_visibility Receipt
       h3.invoice_visibility Invoice
       // Brand name
-      div(class="brand_name")
+      div(class="brand_name" )
         label Your Brand Name
-        input(type="text", name="brandName")
+        input(type="text", name="brandName" id="brand_name")
       // Date Issued
       .date
         label Date Issued
-        input(type="text", name="dateIssued")
+        input(type="text", name="dateIssued" class="datepicker")
       // Payment Due Date
       .date.invoice_visibility
         label Due Date
-        input(type="text", name="dueDate")
+        input(type="text", name="dueDate" class="datepicker")
       // Receipt number
       div
         label Document Number
-        input(type="text", name="documentNumber")
+        input(type="text", name="documentNumber" id="documentNumber")
+        label Check to Auto-Generate
+        input(type="checkbox", name="autoGenerate" id="autoGenerate")
       // Recipient name
       div.receipt_visibility
         label Customer's Details
@@ -103,6 +105,7 @@ block content
       input(type="button", value="Preview")
       button(type="submit") Submit
   script(src="/js/script.js")
+  
    
 
 
