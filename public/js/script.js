@@ -7,7 +7,9 @@ const selectInvoiceBtn = document.querySelector(".invoice");
 const serviceType = document.querySelector("#service_type_hidden");
 const checkbox = document.querySelector("input[name=autoGenerate]");
 const paymentMethodSelect = document.getElementById("paymentMethodSelect");
+
 const paymentIfOther = document.getElementById("paymentIfOther");
+const editTransaction = document.getElementById("edit_transaction");
 
 addItemsBtn.addEventListener("click", function (e) {
   e.preventDefault();
@@ -24,19 +26,15 @@ addItemsBtn.addEventListener("click", function (e) {
   items.insertAdjacentHTML("afterend", html);
 });
 
-selectInvoiceBtn.addEventListener("click", function (e) {
-  service_type_hidden.value = "Invoice";
-  const invoice_visibility = document.querySelectorAll(".invoice_visibility");
-  invoice_visibility.forEach((item) => {
-    item.style.display = "block";
+const showReceipt = function (e) {
+  paymentMethodSelect.addEventListener("change", function (e) {
+    if (this.value === "other") {
+      paymentIfOther.disabled = false;
+      paymentIfOther.focus();
+    } else {
+      paymentIfOther.disabled = true;
+    }
   });
-  const receipt_visibility = document.querySelectorAll(".receipt_visibility");
-  receipt_visibility.forEach((item) => {
-    item.style.display = "none";
-  });
-});
-
-selectReceiptBtn.addEventListener("click", function (e) {
   service_type_hidden.value = "Receipt";
   const receipt_visibility = document.querySelectorAll(".receipt_visibility");
   receipt_visibility.forEach((item) => {
@@ -46,7 +44,27 @@ selectReceiptBtn.addEventListener("click", function (e) {
       item.style.display = "none";
     });
   });
-});
+};
+
+const showInvoice = function (e) {
+  service_type_hidden.value = "Invoice";
+  const invoice_visibility = document.querySelectorAll(".invoice_visibility");
+  invoice_visibility.forEach((item) => {
+    item.style.display = "block";
+  });
+  const receipt_visibility = document.querySelectorAll(".receipt_visibility");
+  receipt_visibility.forEach((item) => {
+    item.style.display = "none";
+  });
+};
+
+if (serviceType.value === "Receipt") {
+  showReceipt();
+} else {
+  showInvoice();
+}
+selectInvoiceBtn.addEventListener("click", showInvoice);
+selectReceiptBtn.addEventListener("click", showReceipt);
 
 checkbox.addEventListener("change", function () {
   let brandName = document.getElementById("brand_name").value;
@@ -64,11 +82,6 @@ checkbox.addEventListener("change", function () {
   }
 });
 
-paymentMethodSelect.addEventListener("change", function (e) {
-  if (this.value === "other") {
-    paymentIfOther.disabled = false;
-    paymentIfOther.focus();
-  } else {
-    paymentIfOther.disabled = true;
-  }
+editTransaction.addEventListener("click", (e) => {
+  document.getElementById("edit_form_fieldset").disabled = false;
 });

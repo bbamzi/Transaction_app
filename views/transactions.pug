@@ -17,7 +17,14 @@ block content
                             h2.transaction__price #{transaction.currency.symbol}#{transaction.total}
                             p.transaction__description #{transaction.recipientName}
                         .card__actions
-                            button.btn View Details
-                             button.btn Share Transaction
+                            a(href=`/transaction/${transaction._id}`)
+                                button.btn(type="button")
+                                    | View Details
+                            
+                            form(action="/delete-transaction", method="POST")
+                                input(type="hidden", name="transactionId", value=transaction._id )
+                                button.btn(type="submit") delete
+
+                            button.btn Share Transaction
         else
             h1 No Transactions

@@ -5,7 +5,22 @@ exports.getAddTransaction = (req, res, next) => {
     pageTitle: "New Transaction",
   });
 };
-
+const itemPopulate = (description, unit, price) => {
+  const itemObj = [];
+  if (typeof description === "string") {
+    itemObj.push({ description, unit, price });
+  } else {
+    for (let index = 0; index < description.length; index++) {
+      const item = {
+        description: description[index],
+        unit: unit[index],
+        price: price[index],
+      };
+      itemObj.push(item);
+    }
+  }
+  return itemObj;
+};
 exports.postAddTransaction = (req, res, next) => {
   const {
     serviceType,
@@ -14,7 +29,6 @@ exports.postAddTransaction = (req, res, next) => {
     dateIssued,
     dueDate,
     documentNumber,
-    autoGenerate,
     recipientName,
     billTo,
     paymentMethod,
@@ -32,25 +46,6 @@ exports.postAddTransaction = (req, res, next) => {
     clientSignature,
   } = req.body;
 
-  const itemPopulate = (description, unit, price) => {
-    const itemObj = [];
-    if (typeof description === "string") {
-      itemObj.push({ description, unit, price });
-    } else {
-      for (let index = 0; index < description.length; index++) {
-        const item = {
-          description: description[index],
-          unit: unit[index],
-          price: price[index],
-        };
-        itemObj.push(item);
-      }
-    }
-    return itemObj;
-  };
-  const paymentMethodSetter =
-    paymentMethod === "other" ? paymentIfOther : paymentMethod;
-
   const recieptTransaction = new Transaction({
     serviceType,
     logo,
@@ -59,7 +54,7 @@ exports.postAddTransaction = (req, res, next) => {
     dueDate,
     documentNumber,
     recipientName,
-    paymentMethod: paymentMethodSetter,
+    paymentMethod: paymentMethod === "other" ? paymentIfOther : paymentMethod,
     items: itemPopulate(description, unit, price),
     currency,
     shippingFee,
@@ -77,7 +72,7 @@ exports.postAddTransaction = (req, res, next) => {
     dateIssued,
     documentNumber,
     billTo,
-    paymentMethod: paymentMethodSetter,
+    paymentMethod: paymentMethod === "other" ? paymentIfOther : paymentMethod,
     invoicePaymentDetails: invoicePaymentDetails.toString(),
     items: itemPopulate(description, unit, price),
     currency,
@@ -109,13 +104,73 @@ exports.getTransactions = (req, res, next) => {
         hasTransactions: transactions > 0,
       });
     })
-    .catch((err) => {
-      console.log(err);
-    });
-  console.log(req);
+    .catch((err) => {});
 };
 
-exports.getTransaction = (req, res, next) => {
+exports.postEditTransaction = (req, res, next) => {
+  const {
+    serviceType,
+    logo,
+    brandName,
+    dateIssued,
+    dueDate,
+    documentNumber,
+    recipientName,
+    billTo,
+    paymentMethod,
+    paymentIfOther,
+    invoicePaymentDetails,
+    description,
+    unit,
+    price,
+    currency,
+    shippingFee,
+    vat,
+    discount,
+    sub_total,
+    total,
+    clientSignature,
+  } = req.body;
+
+  const getT = function (t) {
+    t.serviceType = serviceType;
+    t.logo = logo;
+    t.brandName = brandName;
+    t.dateIssued = dateIssued;
+    t.documentNumber = documentNumber;
+    t.items = itemPopulate(description, unit, price);
+    t.currency = currency;
+    t.shippingFee = shippingFee;
+    t.vat = vat;
+    t.discount = discount;
+    t.sub_total = sub_total;
+    t.total = total;
+    t.clientSignature = clientSignature;
+
+    if (serviceType === "Receipt") {
+      t.recipientName = recipientName;
+      t.paymentMethod =
+        paymentMethod === "other" ? paymentIfOther : paymentMethod;
+      t.invoicePaymentDetails = invoicePaymentDetails.toString();
+    } else {
+      t.dueDate = dueDate; //invoice
+      t.billTo = billTo;
+    }
+    return t;
+  };
+
+  Transaction.findById(req.body.transactionId)
+    .then((transaction) => {
+      console.log(getT(transaction));
+      getT(transaction).save();
+    })
+    .then((result) => {
+      res.redirect("/transactions");
+    })
+    .catch((err) => {});
+};
+
+exports.getEditTransaction = (req, res, next) => {
   const transactionId = req.params.transactionId;
   Transaction.findById(transactionId).then((transaction) => {
     res.render("transaction", {
@@ -124,6 +179,10 @@ exports.getTransaction = (req, res, next) => {
     });
   });
 };
-// exports.updateTransaction = factory.updateOne(Transaction);
 
-// exports.deleteTransaction = factory.deleteOne(Transaction);
+exports.postDeleteTransaction = (req, res, next) => {
+  const transactionId = req.body.transactionId;
+  Transaction.findByIdAndDelete(transactionId).then(() => {
+    res.redirect("/transactions");
+  });
+};

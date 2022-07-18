@@ -1,0 +1,115 @@
+extends layouts/main-Layout
+
+block content 
+  
+  
+  
+  h1 app
+  input.receipt(type="button", value="Receipt")
+  input.invoice(type="button", value="Switch to Invoice")
+  input.invoice(type="button", value="Edit" id="edit_transaction")
+  fieldset(disabled="disabled" id="edit_form_fieldset")
+    form(action="/transaction", method="POST" )
+      input(type="hidden", name="serviceType", value=transaction.serviceType  id="service_type_hidden" )
+      input(type="hidden", name="transactionId", value=transaction._id )
+    
+      .form-control
+      // logo
+      .logo
+        label Change Logo
+        input(type="file", name="logo" value = transaction.logo) 
+      // receipt and invoice
+      div(class="receipt_page")
+        h3.receipt_visibility Receipt
+        h3.invoice_visibility Invoice
+        // Brand name
+        div(class="brand_name" )
+          label Your Brand Name
+          input(type="text", name="brandName" id="brand_name" value = transaction.brandName )
+        // Date Issued
+        .date
+          label Date Issued
+          input(type="text", name="dateIssued" class="datepicker" value=transaction.dateIssued)
+        // Payment Due Date
+        .date.invoice_visibility
+          label Due Date
+          input(type="text", name="dueDate" class="datepicker" value=transaction.dueDate)
+        // Receipt number
+        div
+          label Document Number
+          input(type="text", name="documentNumber" id="documentNumber" value=transaction.documentNumber)
+          label Check to Auto-Generate
+          input(type="checkbox", name="autoGenerate" id="autoGenerate")
+        // Recipient name
+        div.receipt_visibility
+          label Customer's Details
+          textarea(name="recipientName", cols="20", rows="3" placeholder="Name\nAddress\nContact" ) #{transaction.recipientName}
+
+        div.invoice_visibility
+          label Bill To
+          textarea(name="billTo", cols="20", rows="2")  #{transaction.billTo}
+        brx
+        //- payment method for receipt
+        .receipt_visibility
+          label Payment Method
+          select(name="paymentMethod" id="paymentMethodSelect" value=transaction.paymentMethod)
+            option Bank Transfer
+            option Mobile Deposit
+            option other
+          label If Other
+          input(type="text" name="paymentIfOther" id="paymentIfOther" disabled)
+        br
+        //- payment details for invoice 
+        div.invoice_visibility
+          h3 Payment Details 
+          label Account 
+          input(type="text" , name="invoicePaymentDetails" value=transaction.invoicePaymentDetails) 
+          label A/c Name 
+          input(type="text", name="invoicePaymentDetails" value=transaction.invoicePaymentDetails)
+          label Bank Details 
+          input(type="text", name="invoicePaymentDetails" , placeholder="Add your Bank Name" value=transaction.invoicePaymentDetails)
+        // items
+        div(class="items")
+          div
+            label Description
+            textarea(name="description", cols="20", rows="2"  value="transaction.description") #{transaction.recipientName}
+            label Unit/Quantity
+            input(name="unit" value=transaction.unit)
+            label Price
+            input(type="text", name="price" value=transaction.price)
+            br
+        br
+        input(type="button", value="add item", id="addItems")
+        br
+        div(class="supplementary_items")
+          div
+            label Shipping 
+            input(name="shippingFee" value=transaction.shippingFee)
+            label VAT 
+            input(name="vat" value=transaction.vat)
+            label Discount
+            input(type="text", name="discount" value=transaction.Discount)
+        .totals
+          div
+            label Sub Total
+            input(type="text", name="sub_total" value=transaction.sub_total)
+          div 
+            label Total
+            input(type="text", name="total" value=transaction.total)
+          div 
+            label Currency
+            input(type="text",name="currency" value=transaction.currency) 
+
+      br
+      div
+        input(type="button", name="invoice_add_signature", value="Add Signature")
+        input(type="button", value="Preview")
+        button(type="submit") Update
+  script(src="/js/script.js")
+  
+   
+
+
+
+  
+
