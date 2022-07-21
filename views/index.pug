@@ -48,25 +48,26 @@ block content
         label Bill To
         textarea(name="billTo", cols="20", rows="2")
       br
-      //- payment method for receipt
-      .receipt_visibility
-        label Payment Method
-        select(name="paymentMethod" id="paymentMethodSelect")
-          option Bank Transfer
-          option Mobile Deposit
-          option other
-        label If Other
-        input(type="text" name="paymentIfOther" id="paymentIfOther" disabled)
+      
+      
+      label Payment Method
+      select(name="paymentMethod" id="paymentMethodSelect")
+        option Bank
+        option Cash
+        option other
+      label If Other
+      input(type="text" name="paymentIfOther" id="paymentIfOther" disabled)
       br
       //- payment details for invoice 
-      div.invoice_visibility
+      div(class="invoice_visibility" style = "display:none" id="payment_details")
         h3 Payment Details 
         label Account 
-        input(type="text" , name="invoicePaymentDetails") 
+        input(type="text" , name="invoice_account_number") 
         label A/c Name 
-        input(type="text", name="invoicePaymentDetails")
+        input(type="text", name="invoice_account_name")
         label Bank Details 
-        input(type="text", name="invoicePaymentDetails" , placeholder="Add your Bank Name")
+        input(type="text", name="invoice_account_Name" , placeholder="Add your Bank Name")
+        input(type="button", value="X" id="delete_payment_detail")
       // items
       div(class="items")
         div

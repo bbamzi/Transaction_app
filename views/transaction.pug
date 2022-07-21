@@ -5,8 +5,8 @@ block content
   
   
   h1 app
-  input.receipt(type="button", value="Receipt")
-  input.invoice(type="button", value="Switch to Invoice")
+  input.receipt(type="button", value="Receipt" style = "display:none")
+  input.invoice(type="button", value="Switch to Invoice" style = "display:none")
   input.invoice(type="button", value="Edit" id="edit_transaction")
   fieldset(disabled="disabled" id="edit_form_fieldset")
     form(action="/transaction", method="POST" )
@@ -52,12 +52,20 @@ block content
         //- payment method for receipt
         .receipt_visibility
           label Payment Method
-          select(name="paymentMethod" id="paymentMethodSelect" value=transaction.paymentMethod)
+          select(name="paymentMethod" id="paymentMethodSelect" )
+            option(selected) #{transaction.paymentMethod}
             option Bank Transfer
             option Mobile Deposit
             option other
           label If Other
-          input(type="text" name="paymentIfOther" id="paymentIfOther" disabled)
+          if transaction.paymentMethod !== 'Bank Transfer' | transaction.paymentMethod !== 'Mobile Deposit'
+            input(type="text" name="paymentIfOther" id="paymentIfOther" value=transaction.paymentMethod)
+          else 
+            input(type="text" name="paymentIfOther" id="paymentIfOther" value=transaction.paymentMethod disabled)
+          
+
+
+
         br
         //- payment details for invoice 
         div.invoice_visibility

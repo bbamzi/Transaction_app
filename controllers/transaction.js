@@ -63,6 +63,7 @@ exports.postAddTransaction = (req, res, next) => {
     sub_total,
     total,
     clientSignature,
+    userId: req.user._id,
   });
 
   const invoiceTransaction = new Transaction({
@@ -72,7 +73,6 @@ exports.postAddTransaction = (req, res, next) => {
     dateIssued,
     documentNumber,
     billTo,
-    paymentMethod: paymentMethod === "other" ? paymentIfOther : paymentMethod,
     invoicePaymentDetails: invoicePaymentDetails.toString(),
     items: itemPopulate(description, unit, price),
     currency,
@@ -82,6 +82,7 @@ exports.postAddTransaction = (req, res, next) => {
     sub_total,
     total,
     clientSignature,
+    userId: req.user,
   });
   const transaction =
     serviceType === "Receipt" ? recieptTransaction : invoiceTransaction;
@@ -97,7 +98,9 @@ exports.postAddTransaction = (req, res, next) => {
 
 exports.getTransactions = (req, res, next) => {
   Transaction.find()
+    .populate("userId")
     .then((transactions) => {
+      console.log(transactions);
       res.render("transactions", {
         transactions,
         pageTitle: "All Transactions",
@@ -161,7 +164,6 @@ exports.postEditTransaction = (req, res, next) => {
 
   Transaction.findById(req.body.transactionId)
     .then((transaction) => {
-      console.log(getT(transaction));
       getT(transaction).save();
     })
     .then((result) => {
