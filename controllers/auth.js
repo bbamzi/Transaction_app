@@ -23,6 +23,8 @@ exports.postLogin = (req, res, next) => {
               console.log(err);
               res.redirect("/transactions");
             });
+          } else {
+            res.redirect("/");
           }
         })
         .catch((err) => {

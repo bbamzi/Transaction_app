@@ -127,6 +127,19 @@ exports.getTransactions = (req, res, next) => {
 };
 
 // ********************************************* GET EDIT  TRANSACTIONS
+exports.getEditTransaction = (req, res, next) => {
+  if (!req.session.isLoggedIn) {
+    return res.redirect("/");
+  }
+  const transactionId = req.params.transactionId;
+  Transaction.findById(transactionId).then((transaction) => {
+    res.render("transaction", {
+      transaction,
+      pageTitle: transaction.documentNumber,
+    });
+  });
+};
+// ********************************************* POST EDIT  TRANSACTIONS
 exports.postEditTransaction = (req, res, next) => {
   const {
     serviceType,
@@ -188,18 +201,6 @@ exports.postEditTransaction = (req, res, next) => {
     })
     .catch((err) => {});
 };
-
-// ********************************************* POST EDIT  TRANSACTIONS
-exports.getEditTransaction = (req, res, next) => {
-  const transactionId = req.params.transactionId;
-  Transaction.findById(transactionId).then((transaction) => {
-    res.render("transaction", {
-      transaction,
-      pageTitle: transaction.documentNumber,
-    });
-  });
-};
-
 // ********************************************* POST DELETE TRANSACTIONS
 exports.postDeleteTransaction = (req, res, next) => {
   const transactionId = req.body.transactionId;
