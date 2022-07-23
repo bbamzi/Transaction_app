@@ -2,11 +2,7 @@ const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema({
   dateJoined: { type: Date, default: Date.now },
-  name: {
-    type: String,
-    trim: true,
-    required: [true, "input is Required"],
-  },
+
   email: {
     type: String,
     trim: true,
@@ -25,19 +21,12 @@ const userSchema = new mongoose.Schema({
       ref: "Transaction",
     },
   ],
-
-  //   password: {
-  //     type: String,
-  //     required: [true, "Please provide a password"],
-  //     minlength: 5,
-  //     select: false,
-  //   },
-  //   passwordConfirm: {
-  //     type: String,
-  //     required: [true, "Please provide a password"],
-  //     validate: function (el) {
-  //       return el === this.password;
-  //     },
+  password: {
+    type: String,
+  },
+  passwordConfirm: {
+    type: String,
+  },
   // message: "Passwords are not the same",
   //   },
   // region: {

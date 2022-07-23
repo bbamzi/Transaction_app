@@ -1,10 +1,7 @@
 const Transaction = require("./../model/transactionModel");
 
-exports.getAddTransaction = (req, res, next) => {
-  res.render("index", {
-    pageTitle: "New Transaction",
-  });
-};
+// ##########################################  METHODS ##############################################
+
 const itemPopulate = (description, unit, price) => {
   const itemObj = [];
   if (typeof description === "string") {
@@ -21,6 +18,18 @@ const itemPopulate = (description, unit, price) => {
   }
   return itemObj;
 };
+
+// ##########################################  CONTROLLERS ###########################################
+
+// ********************************************* GET ADD TRANSACTIONS
+exports.getAddTransaction = (req, res, next) => {
+  res.render("index", {
+    pageTitle: "New Transaction",
+    isAuthenticated: req.session.isLoggedIn,
+  });
+};
+
+// ********************************************* POST ADD TRANSACTIONS
 exports.postAddTransaction = (req, res, next) => {
   const {
     serviceType,
@@ -33,7 +42,9 @@ exports.postAddTransaction = (req, res, next) => {
     billTo,
     paymentMethod,
     paymentIfOther,
-    invoicePaymentDetails,
+    invoice_account_number,
+    invoice_account_name,
+    invoice_bank_Name,
     description,
     unit,
     price,
@@ -45,13 +56,11 @@ exports.postAddTransaction = (req, res, next) => {
     total,
     clientSignature,
   } = req.body;
-
   const recieptTransaction = new Transaction({
     serviceType,
     logo,
     brandName,
     dateIssued,
-    dueDate,
     documentNumber,
     recipientName,
     paymentMethod: paymentMethod === "other" ? paymentIfOther : paymentMethod,
@@ -63,9 +72,8 @@ exports.postAddTransaction = (req, res, next) => {
     sub_total,
     total,
     clientSignature,
-    userId: req.user._id,
+    userId: req.session.isLoggedIn ? req.session.user._id : null,
   });
-
   const invoiceTransaction = new Transaction({
     serviceType,
     logo,
@@ -73,7 +81,10 @@ exports.postAddTransaction = (req, res, next) => {
     dateIssued,
     documentNumber,
     billTo,
-    invoicePaymentDetails: invoicePaymentDetails.toString(),
+    dueDate,
+    invoice_account_number,
+    invoice_account_name,
+    invoice_bank_Name,
     items: itemPopulate(description, unit, price),
     currency,
     shippingFee,
@@ -82,26 +93,31 @@ exports.postAddTransaction = (req, res, next) => {
     sub_total,
     total,
     clientSignature,
-    userId: req.user,
+    userId: req.session.isLoggedIn ? req.session.user._id : null,
   });
   const transaction =
     serviceType === "Receipt" ? recieptTransaction : invoiceTransaction;
+  console.log(req.session.isLoggedIn);
+  if (req.session.isLoggedIn) {
+    transaction
+      .save()
+      .then((result) => {
+        res.redirect("/");
+      })
+      .catch((err) => {});
+  }
 
-  transaction
-    .save()
-    .then((result) => {
-      console.log("Created Transaction");
-      res.redirect("/");
-    })
-    .catch((err) => {});
+  res.redirect("/");
 };
 
+// ********************************************* GET  TRANSACTIONS
 exports.getTransactions = (req, res, next) => {
+  console.log(req.session.user);
   Transaction.find()
     .populate("userId")
     .then((transactions) => {
-      console.log(transactions);
       res.render("transactions", {
+        isAuthenticated: req.session.isLoggedIn,
         transactions,
         pageTitle: "All Transactions",
         hasTransactions: transactions > 0,
@@ -110,6 +126,7 @@ exports.getTransactions = (req, res, next) => {
     .catch((err) => {});
 };
 
+// ********************************************* GET EDIT  TRANSACTIONS
 exports.postEditTransaction = (req, res, next) => {
   const {
     serviceType,
@@ -172,6 +189,7 @@ exports.postEditTransaction = (req, res, next) => {
     .catch((err) => {});
 };
 
+// ********************************************* POST EDIT  TRANSACTIONS
 exports.getEditTransaction = (req, res, next) => {
   const transactionId = req.params.transactionId;
   Transaction.findById(transactionId).then((transaction) => {
@@ -182,6 +200,7 @@ exports.getEditTransaction = (req, res, next) => {
   });
 };
 
+// ********************************************* POST DELETE TRANSACTIONS
 exports.postDeleteTransaction = (req, res, next) => {
   const transactionId = req.body.transactionId;
   Transaction.findByIdAndDelete(transactionId).then(() => {
