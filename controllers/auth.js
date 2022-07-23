@@ -24,7 +24,7 @@ exports.postLogin = (req, res, next) => {
               res.redirect("/transactions");
             });
           } else {
-            res.redirect("/");
+            res.redirect("/login");
           }
         })
         .catch((err) => {

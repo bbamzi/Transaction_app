@@ -112,7 +112,6 @@ exports.postAddTransaction = (req, res, next) => {
 
 // ********************************************* GET  TRANSACTIONS
 exports.getTransactions = (req, res, next) => {
-  console.log(req.session.user);
   Transaction.find()
     .populate("userId")
     .then((transactions) => {
@@ -128,9 +127,6 @@ exports.getTransactions = (req, res, next) => {
 
 // ********************************************* GET EDIT  TRANSACTIONS
 exports.getEditTransaction = (req, res, next) => {
-  if (!req.session.isLoggedIn) {
-    return res.redirect("/");
-  }
   const transactionId = req.params.transactionId;
   Transaction.findById(transactionId).then((transaction) => {
     res.render("transaction", {
