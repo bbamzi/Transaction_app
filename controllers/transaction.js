@@ -23,9 +23,9 @@ const itemPopulate = (description, unit, price) => {
 
 // ********************************************* GET ADD TRANSACTIONS
 exports.getAddTransaction = (req, res, next) => {
-  res.render("index", {
+  res.render("transactions/index", {
     pageTitle: "New Transaction",
-    isAuthenticated: req.session.isLoggedIn,
+    currentView: "addTransaction",
   });
 };
 
@@ -56,6 +56,7 @@ exports.postAddTransaction = (req, res, next) => {
     total,
     clientSignature,
   } = req.body;
+
   const recieptTransaction = new Transaction({
     serviceType,
     logo,
@@ -74,6 +75,7 @@ exports.postAddTransaction = (req, res, next) => {
     clientSignature,
     userId: req.session.isLoggedIn ? req.session.user._id : null,
   });
+
   const invoiceTransaction = new Transaction({
     serviceType,
     logo,
@@ -82,6 +84,7 @@ exports.postAddTransaction = (req, res, next) => {
     documentNumber,
     billTo,
     dueDate,
+    paymentMethod: paymentMethod === "other" ? paymentIfOther : paymentMethod,
     invoice_account_number,
     invoice_account_name,
     invoice_bank_Name,
@@ -95,9 +98,10 @@ exports.postAddTransaction = (req, res, next) => {
     clientSignature,
     userId: req.session.isLoggedIn ? req.session.user._id : null,
   });
+
   const transaction =
     serviceType === "Receipt" ? recieptTransaction : invoiceTransaction;
-  console.log(req.session.isLoggedIn);
+
   if (req.session.isLoggedIn) {
     transaction
       .save()
@@ -115,8 +119,7 @@ exports.getTransactions = (req, res, next) => {
   Transaction.find()
     .populate("userId")
     .then((transactions) => {
-      res.render("transactions", {
-        isAuthenticated: req.session.isLoggedIn,
+      res.render("transactions/transactions", {
         transactions,
         pageTitle: "All Transactions",
         hasTransactions: transactions > 0,
@@ -129,7 +132,8 @@ exports.getTransactions = (req, res, next) => {
 exports.getEditTransaction = (req, res, next) => {
   const transactionId = req.params.transactionId;
   Transaction.findById(transactionId).then((transaction) => {
-    res.render("transaction", {
+    res.render("transactions/index", {
+      currentView: "editTransaction",
       transaction,
       pageTitle: transaction.documentNumber,
     });

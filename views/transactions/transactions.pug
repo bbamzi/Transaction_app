@@ -1,4 +1,4 @@
-extends layouts/main-layout.pug
+extends ../layouts/main-Layout
 
 block styles
     link(rel="stylesheet", href="/css/transaction.css")
@@ -23,6 +23,7 @@ block content
                             
                             form(action="/delete-transaction", method="POST")
                                 input(type="hidden", name="transactionId", value=transaction._id )
+                                input(type="hidden", name="_csrf" , value = csrfToken )
                                 button.btn(type="submit") delete
 
                             button.btn Share Transaction

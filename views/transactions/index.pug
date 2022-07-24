@@ -1,0 +1,128 @@
+extends ../layouts/main-Layout
+
+block content 
+  
+  
+  
+  h1 app
+  input.receipt(type="button", value="Receipt" style = `display:${currentView === "editTransaction" ? "none" : "block"}`)
+  input.invoice(type="button", value="Invoice" style = `display:${currentView === "editTransaction" ? "none" : "block"}`)
+  // Form
+  form(action=`${currentView === "editTransaction" ? "/transaction" : "/"}`, method="POST")
+    input(type="hidden", name="_csrf" , value = csrfToken )
+    input(type="hidden", name="serviceType", value= currentView === "editTransaction" ? transaction.serviceType : "" id="service_type_hidden" )
+    input(type="hidden", name="transactionId", value= currentView === "editTransaction" ? transaction._id : "" )
+  
+  
+  
+    .form-control
+      // logo
+      .logo
+        label #{currentView === "editTransaction" ? "Change Logo" : "Upload Logo"} 
+        input(type="file", name="logo" value =  currentView === "editTransaction" ? transaction.logo : "") 
+      // receipt and invoice
+      div(class="receipt_page")
+        h3.receipt_visibility Receipt
+        h3.invoice_visibility Invoice
+        // Brand name
+        div(class="brand_name" )
+          label Your Brand Name
+          input(type="text", name="brandName" id="brand_name" value =  currentView === "editTransaction" ? transaction.brandName : "")
+        // Date Issued
+        .date
+          label Date Issued
+          input(type="text", name="dateIssued" class="datepicker" value= currentView === "editTransaction" ? transaction.dateIssued : "")
+        // Payment Due Date
+        .date.invoice_visibility
+          label Due Date
+          input(type="text", name="dueDate" class="datepicker" value= currentView === "editTransaction" ? transaction.dueDate : "")
+        // Receipt number
+        div
+          label Document Number
+          input(type="text", name="documentNumber" id="documentNumber" value= currentView === "editTransaction" ? transaction.documentNumber: "")
+          label Check to Auto-Generate
+          input(type="checkbox", name="autoGenerate" id="autoGenerate")
+        // Recipient name
+        div.receipt_visibility
+          label Customer's Details
+          textarea(name="recipientName", cols="20", rows="3" placeholder="Name\nAddress\nContact" ) #{currentView === "editTransaction" ? transaction.recipientName : ""}
+
+        div.invoice_visibility
+          label Bill To
+          textarea(name="billTo", cols="20", rows="2") #{currentView === "editTransaction" ? transaction.billTo : ""}
+        
+        //- payment method for receipt
+        
+        label Payment Method
+        select(name="paymentMethod" id="paymentMethodSelect" )
+          option(selected) #{currentView === "editTransaction" ? transaction.paymentMethod : "Select Payment Method"}
+          option Bank
+          option Cash
+          option other
+        label If Other
+        if currentView === "editTransaction"   
+          if transaction.paymentMethod !== 'Bank' && transaction.paymentMethod !== 'Cash'
+            input(type="text" name="paymentIfOther" id="paymentIfOther" value=transaction.paymentMethod)
+          else 
+            input(type="text" name="paymentIfOther" id="paymentIfOther"  disabled)
+        else
+          input(type="text" name="paymentIfOther" id="paymentIfOther" disabled)
+          
+        //- payment details for invoice 
+        div.invoice_visibility
+        if currentView === "editTransaction"   
+          div( id= "payment_details", style=`display:${transaction.paymentMethod === "Bank" ? "block" : "none"}`)
+            h3 Payment Details 
+            label Account 
+            input(type="text" , name="invoice_account_number" value= currentView === "editTransaction" ? transaction.invoice_account_number : "") 
+            label A/c Name 
+            input(type="text", name="invoice_account_name" value= currentView === "editTransaction" ? transaction.invoice_account_name : "")
+            label Bank Details 
+            input(type="text", name="invoice_bank_Name" , placeholder="Add your Bank Name" value= currentView === "editTransaction" ? transaction.invoice_bank_Name : "")
+        if currentView !=="editTransaction" 
+          div( id= "payment_details", style=`display:none`)
+            h3 Payment Details 
+            label Account 
+            input(type="text" , name="invoice_account_number" value= currentView === "editTransaction" ? transaction.invoice_account_number : "") 
+            label A/c Name 
+            input(type="text", name="invoice_account_name" value= currentView === "editTransaction" ? transaction.invoice_account_name : "")
+            label Bank Details 
+            input(type="text", name="invoice_bank_Name" , placeholder="Add your Bank Name" value= currentView === "editTransaction" ? transaction.invoice_bank_Name : "")
+        // items
+        div(class="items")
+          div
+            label Description    
+            textarea(name="description", cols="20", rows="2"  )  #{currentView === "editTransaction" ? transaction.recipientName : "" }
+            label Unit/Quantity
+            input(name="unit" value= currentView === "editTransaction" ? transaction.unit : "")
+            label Price
+            input(type="text", name="price" value= currentView === "editTransaction" ? transaction.price : "")
+            br
+        br
+        input(type="button", value="add item", id="addItems")
+        br
+        div(class="supplementary_items")
+          div
+            label Shipping 
+            input(name="shippingFee" value= currentView === "editTransaction" ? transaction.shippingFee : "" )
+            label VAT 
+            input(name="vat" value= currentView === "editTransaction" ? transaction.vat : "" )
+            label Discount
+            input(type="text", name="discount" value=currentView === "editTransaction" ? transaction.discount : "" )
+        .totals
+          div
+            label Sub Total
+            input(type="text", name="sub_total" value= currentView === "editTransaction" ? transaction.sub_total : "")
+          div 
+            label Total
+            input(type="text", name="total" value= currentView === "editTransaction" ? transaction.sub_total : "") 
+          div  
+            label Currency
+            input(type="text",name="currency" value= currentView === "editTransaction" ? transaction.currency : "") 
+
+      br
+      div
+        input(type="button", name="invoice_add_signature", value="Add Signature")
+        input(type="button", value="Preview") 
+        button(type="submit" ) #{currentView === "editTransaction" ? "Updqate"  : "Submit"}
+  script(src="/js/script.js")

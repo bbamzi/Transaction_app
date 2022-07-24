@@ -1,8 +1,9 @@
-extends layouts/main-Layout
+extends ../layouts/main-Layout
 
 block content 
     main
-      form.login-form(action="/signup", method="POST")
+      br
+      form.login-form.centered(action="/signup", method="POST")
         .form-control
           label(for="email") E-Mail
           input#email(type="email", name="email")
@@ -12,4 +13,6 @@ block content
         .form-control
           label(for="confirmPassword") Confirm Password
           input#confirmPassword(type="password", name="confirmPassword")
-        button.btn(type="submit") Signup
+          input(type="hidden", name="_csrf" , value = csrfToken )
+        .form-control
+          button.btn(type="submit") Signup

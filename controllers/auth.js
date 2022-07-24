@@ -1,9 +1,10 @@
 const bcrpyt = require("bcrypt");
 const User = require("./../model/userModel");
+const sendEmail = require("./../util/email");
+const crypto = require("crypto");
 
 exports.getLogin = (req, res, next) => {
-  console.log(req.get("Cookie"));
-  res.render("login", { pageTitle: "login" });
+  res.render("auth/login", { pageTitle: "login" });
 };
 
 exports.postLogin = (req, res, next) => {
@@ -20,7 +21,6 @@ exports.postLogin = (req, res, next) => {
             req.session.isLoggedIn = true;
             req.session.user = user;
             return req.session.save((err) => {
-              console.log(err);
               res.redirect("/transactions");
             });
           } else {
@@ -28,18 +28,15 @@ exports.postLogin = (req, res, next) => {
           }
         })
         .catch((err) => {
-          console.log(err);
           res.redirect("/login");
         });
     })
-    .catch((err) => console.log(err));
-  console.log(req);
+    .catch((err) => {});
 };
 
 exports.getSignup = (req, res, next) => {
-  res.render("signup", {
+  res.render("auth/signup", {
     pageTitle: "Signup",
-    isAuthenticated: false,
   });
 };
 
@@ -61,13 +58,55 @@ exports.postSignup = (req, res, next) => {
       });
     })
     .then((result) => {
+      sendEmail({ email, subject: "welcome", message: "welcome boss" });
       res.redirect("/login");
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {});
 };
 
 exports.postLogout = (req, res, next) => {
   req.session.destroy(() => {
     res.redirect("/");
   });
+};
+
+exports.getRequestResetPassword = (req, res, next) => {
+  res.render("auth/requestResetPassword");
+};
+
+exports.postRequestResetPassword = async (req, res, next) => {
+  const user = await User.findOne({ email: req.body.email });
+  if (!user) {
+    return res.redirect("/request-reset-password");
+  }
+  const resetToken = crypto.randomBytes(32).toString("hex");
+  user.passwordResetToken = resetToken;
+  user.passwordResetTokenExpires = Date.now() + 10 * 60 * 1000;
+  await user.save();
+
+  const resetURL = `${req.protocol}://${req.get(
+    "host"
+  )}/password-reset/${resetToken}}`;
+  const message = `Forgot Your Password? Follow the link below and input  your new passowrd and passwordConfirm to: ${resetURL}.\nIf you didnt make this request , please ignore the message`;
+  try {
+    await sendEmail({
+      email: req.body.email,
+      subject: "Your Password Reset Token. valid for 10 min ",
+      message,
+    });
+
+    return res.redirect("/password-reset");
+  } catch (err) {
+    user.passwordResetToken = undefined;
+    user.passwordResetExpires = undefined;
+    return res.redirect("/password-reset");
+  }
+};
+
+exports.getResetPassword = (req, res, next) => {
+  res.render("auth/passwordReset");
+};
+
+exports.postResetPassword = (req, res, next) => {
+  res.render("auth/passwordReset");
 };

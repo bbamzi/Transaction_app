@@ -23,7 +23,7 @@ addItemsBtn.addEventListener("click", function (e) {
   <label>Price</label>
   <input type="text" name="price"/><br/>
 </div>`;
-  items.insertAdjacentHTML("afterend", html);
+  items.insertAdjacentHTML("beforeend", html);
 });
 
 const showReceipt = function (e) {
@@ -51,6 +51,18 @@ const showReceipt = function (e) {
 };
 
 const showInvoice = function (e) {
+  paymentMethodSelect.addEventListener("change", function (e) {
+    if (this.value === "other") {
+      paymentIfOther.disabled = false;
+      paymentIfOther.focus();
+      document.getElementById("payment_details").style.display = "block";
+    } else if (this.value === "Bank") {
+      document.getElementById("payment_details").style.display = "block";
+    } else {
+      paymentIfOther.disabled = true;
+      document.getElementById("payment_details").style.display = "none";
+    }
+  });
   service_type_hidden.value = "Invoice";
   const invoice_visibility = document.querySelectorAll(".invoice_visibility");
   invoice_visibility.forEach((item) => {
@@ -91,6 +103,5 @@ editTransaction.addEventListener("click", (e) => {
 });
 
 delete_payment_detail.addEventListener("click", (e) => {
-  console.log("hi");
   document.getElementById("payment_details").style.display = "none";
 });

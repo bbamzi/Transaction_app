@@ -1,0 +1,17 @@
+extends ../layouts/main-Layout
+
+block content 
+    br
+    
+    form.login-form.centered(action="/login", method="post") 
+        .form-control
+            label Email
+            input(type="email", name="email") 
+        .form-control
+            label Password 
+            input(type="password", name="password")
+            input(type="hidden", name="_csrf" , value = csrfToken )
+        .form-control
+            button.btn(type="submit") Login
+    div.centered
+        a(href="/request-reset-password") Forgot Password ?

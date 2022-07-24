@@ -25,9 +25,13 @@ html(lang="en")
                     if !isAuthenticated
                         li.main-header__item
                             a(href="/login", class=(path === '/transactions' ? 'active' : '')) Login
+                    if !isAuthenticated
+                        li.main-header__item
+                            a(href="/signup", class=(path === '/transactions' ? 'active' : '')) Signup
                     if isAuthenticated
                         li.main-header__item
                             form(action="/logout", method="post") 
+                                input(type="hidden", name="_csrf" , value = csrfToken )
                                 button(type="submit") logout
                         
         block content
