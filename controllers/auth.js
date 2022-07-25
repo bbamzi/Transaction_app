@@ -71,7 +71,9 @@ exports.postLogout = (req, res, next) => {
 };
 
 exports.getRequestResetPassword = (req, res, next) => {
-  res.render("auth/requestResetPassword");
+  res.render("auth/requestResetPassword", {
+    pageTitle: "Reset Password?",
+  });
 };
 
 exports.postRequestResetPassword = async (req, res, next) => {
@@ -95,18 +97,41 @@ exports.postRequestResetPassword = async (req, res, next) => {
       message,
     });
 
-    return res.redirect("/password-reset");
+    return res.redirect("/request-token-sent");
   } catch (err) {
+    console.log(err);
     user.passwordResetToken = undefined;
     user.passwordResetExpires = undefined;
-    return res.redirect("/password-reset");
+    return res.redirect("/request-reset-password");
   }
 };
 
-exports.getResetPassword = (req, res, next) => {
-  res.render("auth/passwordReset");
+exports.tokenSent = (req, res, next) => {
+  res.render("auth/tokenSent", {
+    pageTitle: "Token Sent",
+  });
 };
 
-exports.postResetPassword = (req, res, next) => {
-  res.render("auth/passwordReset");
+exports.getResetPassword = async (req, res, next) => {
+  res.render("auth/passwordReset", {
+    pageTitle: "Change Password",
+  });
+};
+
+exports.postResetPassword = async (req, res, next) => {
+  const token = req.params.resetToken;
+  const user = await User.findOne({
+    passwordResetToken: token,
+    passwordResetExpires: { $gt: Date.now() },
+  });
+  if (!user) {
+    return res.redirect("auth/passwordReset");
+  }
+
+  user.password = req.body.password;
+  user.passwordConfirm = req.body.passwordConfirm;
+  user.passwordResetToken = undefined;
+  user.passwordResetExpires = undefined;
+  await user.save();
+  return res.redirect("/");
 };
