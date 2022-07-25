@@ -115,32 +115,38 @@ exports.postAddTransaction = (req, res, next) => {
 };
 
 // ********************************************* GET  TRANSACTIONS
-exports.getTransactions = (req, res, next) => {
-  Transaction.find()
-    .populate("userId")
-    .then((transactions) => {
-      res.render("transactions/transactions", {
-        transactions,
-        pageTitle: "All Transactions",
-        hasTransactions: transactions > 0,
-      });
-    })
-    .catch((err) => {});
+exports.getTransactions = async (req, res, next) => {
+  const transactions = await Transaction.find({
+    userId: req.user._id,
+  }).populate("userId");
+  res.render("transactions/transactions", {
+    transactions,
+    pageTitle: "All Transactions",
+    hasTransactions: transactions > 0,
+  });
 };
 
 // ********************************************* GET EDIT  TRANSACTIONS
-exports.getEditTransaction = (req, res, next) => {
+exports.getEditTransaction = async (req, res, next) => {
   const transactionId = req.params.transactionId;
-  Transaction.findById(transactionId).then((transaction) => {
+  try {
+    const transaction = await Transaction.findOne({
+      _id: transactionId,
+      userId: req.user._id,
+    });
     res.render("transactions/index", {
       currentView: "editTransaction",
       transaction,
       pageTitle: transaction.documentNumber,
     });
-  });
+  } catch {
+    res.render("transactions/authError", {
+      pageTitle: "Authorization Error,",
+    });
+  }
 };
 // ********************************************* POST EDIT  TRANSACTIONS
-exports.postEditTransaction = (req, res, next) => {
+exports.postEditTransaction = async (req, res, next) => {
   const {
     serviceType,
     logo,
@@ -152,7 +158,9 @@ exports.postEditTransaction = (req, res, next) => {
     billTo,
     paymentMethod,
     paymentIfOther,
-    invoicePaymentDetails,
+    invoice_account_number,
+    invoice_account_name,
+    invoice_bank_Name,
     description,
     unit,
     price,
@@ -184,27 +192,34 @@ exports.postEditTransaction = (req, res, next) => {
       t.recipientName = recipientName;
       t.paymentMethod =
         paymentMethod === "other" ? paymentIfOther : paymentMethod;
-      t.invoicePaymentDetails = invoicePaymentDetails.toString();
     } else {
+      t.invoice_account_number = invoice_account_number;
+      t.invoice_account_name = invoice_account_name;
+      t.invoice_bank_Name = invoice_bank_Name;
       t.dueDate = dueDate; //invoice
       t.billTo = billTo;
     }
     return t;
   };
 
-  Transaction.findById(req.body.transactionId)
-    .then((transaction) => {
-      getT(transaction).save();
-    })
-    .then((result) => {
-      res.redirect("/transactions");
-    })
-    .catch((err) => {});
+  const transaction = await Transaction.findOne({
+    _id: req.body.transactionId,
+    userId: req.user._id,
+  });
+
+  const transactions = getT(transaction);
+
+  await transactions.save();
+  res.redirect("/transactions");
 };
 // ********************************************* POST DELETE TRANSACTIONS
-exports.postDeleteTransaction = (req, res, next) => {
+exports.postDeleteTransaction = async (req, res, next) => {
   const transactionId = req.body.transactionId;
-  Transaction.findByIdAndDelete(transactionId).then(() => {
-    res.redirect("/transactions");
+
+  await Transaction.deleteOne({
+    _id: transactionId,
+    userId: req.user._id,
   });
+
+  res.redirect("/transactions");
 };

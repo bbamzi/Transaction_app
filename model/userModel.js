@@ -24,9 +24,7 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
   },
-  passwordConfirm: {
-    type: String,
-  },
+
   // message: "Passwords are not the same",
   //   },
   // region: {

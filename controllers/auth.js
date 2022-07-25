@@ -2,6 +2,7 @@ const bcrpyt = require("bcrypt");
 const User = require("./../model/userModel");
 const sendEmail = require("./../util/email");
 const crypto = require("crypto");
+const { token } = require("morgan");
 
 exports.getLogin = (req, res, next) => {
   res.render("auth/login", { pageTitle: "login" });
@@ -40,28 +41,23 @@ exports.getSignup = (req, res, next) => {
   });
 };
 
-exports.postSignup = (req, res, next) => {
+exports.postSignup = async (req, res, next) => {
   const { email, password, confirmPassword } = req.body;
-  User.findOne({ email })
-    .then((userRes) => {
-      if (userRes) {
-        return res.redirect("/signup");
-      }
-      return bcrpyt.hash(password, 12).then((hashedPassword) => {
-        const user = new User({
-          email,
-          password: hashedPassword,
-          confirmPassword,
-          transactions: [],
-        });
-        return user.save();
-      });
-    })
-    .then((result) => {
-      sendEmail({ email, subject: "welcome", message: "welcome boss" });
-      res.redirect("/login");
-    })
-    .catch((err) => {});
+  const user = await User.findOne({ email });
+  if (user) {
+    return res.redirect("/signup");
+  }
+  if (password !== confirmPassword) {
+    return res.redirect("/signup");
+  }
+  const hashedPassword = await bcrpyt.hash(password, 12);
+  const newUser = new User({
+    email,
+    password: hashedPassword,
+    transactions: [],
+  });
+  await newUser.save();
+  return res.redirect("/login");
 };
 
 exports.postLogout = (req, res, next) => {
@@ -83,7 +79,7 @@ exports.postRequestResetPassword = async (req, res, next) => {
   }
   const resetToken = crypto.randomBytes(32).toString("hex");
   user.passwordResetToken = resetToken;
-  user.passwordResetTokenExpires = Date.now() + 10 * 60 * 1000;
+  user.passwordResetTokenExpires = Date.now() + 10 * 60 * 10000;
   await user.save();
 
   const resetURL = `${req.protocol}://${req.get(
@@ -113,25 +109,42 @@ exports.tokenSent = (req, res, next) => {
 };
 
 exports.getResetPassword = async (req, res, next) => {
+  const resetToken = req.params.resetToken;
+  const user = await User.findOne({
+    passwordResetToken: resetToken,
+    passwordResetTokenExpires: { $gt: Date.now() },
+  });
+  if (!user) {
+    console.log("token invalid");
+    return res.redirect("/login");
+  }
+
   res.render("auth/passwordReset", {
     pageTitle: "Change Password",
+    userId: user._id.toString(),
+    resetToken,
   });
 };
 
 exports.postResetPassword = async (req, res, next) => {
-  const token = req.params.resetToken;
+  const { userId, resetToken, password, passwordConfirm } = req.body;
   const user = await User.findOne({
-    passwordResetToken: token,
-    passwordResetExpires: { $gt: Date.now() },
+    _id: userId,
+    passwordResetToken: resetToken,
+    passwordResetTokenExpires: { $gt: Date.now() },
   });
   if (!user) {
-    return res.redirect("auth/passwordReset");
+    console.log("token invalid");
+    return res.redirect("/login");
   }
 
-  user.password = req.body.password;
-  user.passwordConfirm = req.body.passwordConfirm;
+  if (password !== passwordConfirm) {
+    return res.redirect(`/password-reset/${resetToken}`);
+  }
+  const hashedPassword = await bcrpyt.hash(password, 12);
+  user.password = hashedPassword;
   user.passwordResetToken = undefined;
-  user.passwordResetExpires = undefined;
+  user.passwordResetTokenExpires = undefined;
   await user.save();
   return res.redirect("/");
 };
