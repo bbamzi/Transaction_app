@@ -9,7 +9,7 @@ const mongoose = require("mongoose");
 const session = require("express-session");
 const MongoDbStore = require("connect-mongodb-session")(session);
 const csrf = require("csurf");
-const flashMessage = require("connect-flash");
+const flash = require("connect-flash");
 const User = require("./model/userModel");
 
 // #################################### Environment Variables
@@ -44,13 +44,13 @@ app.use(
 // ####################### Csrf Protection Middleware
 const csrfProtection = csrf();
 app.use(csrfProtection);
+app.use(flash());
 app.use((req, res, next) => {
   if (!req.session.user) {
     return next();
   }
 
   // ##################### Flash Middleware
-  app.use(flashMessage());
 
   // Link A Current User to Session Middleware
   User.findById(req.session.user._id)

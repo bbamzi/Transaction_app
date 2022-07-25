@@ -2,7 +2,8 @@ extends ../layouts/main-Layout
 
 block content 
     br
-    
+    if message
+        div.user-message.user-message--error  #{ message }
     form.login-form.centered(action="/login", method="post") 
         .form-control
             label Email

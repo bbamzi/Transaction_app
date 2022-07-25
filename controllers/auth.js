@@ -2,37 +2,34 @@ const bcrpyt = require("bcrypt");
 const User = require("./../model/userModel");
 const sendEmail = require("./../util/email");
 const crypto = require("crypto");
-const { token } = require("morgan");
 
 exports.getLogin = (req, res, next) => {
-  res.render("auth/login", { pageTitle: "login" });
+  res.render("auth/login", {
+    pageTitle: "login",
+    message: res.locals.message,
+  });
 };
 
-exports.postLogin = (req, res, next) => {
+exports.postLogin = async (req, res, next) => {
   const { email, password } = req.body;
-  User.findOne({ email })
-    .then((user) => {
-      if (!user) {
-        return res.redirect("/login");
-      }
-      bcrpyt
-        .compare(password, user.password)
-        .then((doMatch) => {
-          if (doMatch) {
-            req.session.isLoggedIn = true;
-            req.session.user = user;
-            return req.session.save((err) => {
-              res.redirect("/transactions");
-            });
-          } else {
-            res.redirect("/login");
-          }
-        })
-        .catch((err) => {
-          res.redirect("/login");
-        });
-    })
-    .catch((err) => {});
+  const user = await User.findOne({ email: email });
+  if (!user) {
+    req.flash("error", "Invalid email or password.");
+    return res.redirect("/login");
+  }
+
+  const doMatch = await bcrpyt.compare(password, user.password);
+  console.log(doMatch);
+  if (doMatch) {
+    req.session.isLoggedIn = true;
+    req.session.user = user;
+    return req.session.save((err) => {
+      res.redirect("/transactions");
+    });
+  } else {
+    req.flash("error", "Invalid email or password.");
+    res.redirect("/login");
+  }
 };
 
 exports.getSignup = (req, res, next) => {
@@ -45,9 +42,11 @@ exports.postSignup = async (req, res, next) => {
   const { email, password, confirmPassword } = req.body;
   const user = await User.findOne({ email });
   if (user) {
+    req.flash("error", "This Email has Already Been Used For Signup");
     return res.redirect("/signup");
   }
   if (password !== confirmPassword) {
+    req.flash("error", "Passwords Do Not Match");
     return res.redirect("/signup");
   }
   const hashedPassword = await bcrpyt.hash(password, 12);
@@ -57,6 +56,7 @@ exports.postSignup = async (req, res, next) => {
     transactions: [],
   });
   await newUser.save();
+  req.flash("success", "Sign Up Successful");
   return res.redirect("/login");
 };
 
@@ -75,6 +75,7 @@ exports.getRequestResetPassword = (req, res, next) => {
 exports.postRequestResetPassword = async (req, res, next) => {
   const user = await User.findOne({ email: req.body.email });
   if (!user) {
+    req.flash("error", "Invalid Email");
     return res.redirect("/request-reset-password");
   }
   const resetToken = crypto.randomBytes(32).toString("hex");
@@ -115,7 +116,8 @@ exports.getResetPassword = async (req, res, next) => {
     passwordResetTokenExpires: { $gt: Date.now() },
   });
   if (!user) {
-    console.log("token invalid");
+    req.flash("error", "Expired or Invalid Token");
+
     return res.redirect("/login");
   }
 
@@ -134,7 +136,6 @@ exports.postResetPassword = async (req, res, next) => {
     passwordResetTokenExpires: { $gt: Date.now() },
   });
   if (!user) {
-    console.log("token invalid");
     return res.redirect("/login");
   }
 

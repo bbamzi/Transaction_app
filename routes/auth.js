@@ -1,9 +1,10 @@
 const express = require("express");
 const authController = require("./../controllers/auth");
+const middleware = require("./../middleware/middleware");
 
 const router = express.Router();
 
-router.get("/login", authController.getLogin);
+router.get("/login", middleware.getFlashMessage, authController.getLogin);
 router.post("/login", authController.postLogin);
 router.post("/logout", authController.postLogout);
 router.get("/signup", authController.getSignup);
