@@ -3,7 +3,9 @@ extends ../layouts/main-Layout
 block content 
     br
     if message
-        div.user-message.user-message--error  #{ message }
+        //- `${#{ messageType } === "error"? "error":"success"}`  #{ message }
+        //- div.user-message.user-message--error  #{ message }
+        div(class = `user-message user-message--${messageType === "error"? "error":"success"}`)  #{ message }
     form.login-form.centered(action="/login", method="post") 
         .form-control
             label Email
@@ -13,6 +15,6 @@ block content
             input(type="password", name="password")
             input(type="hidden", name="_csrf" , value = csrfToken )
         .form-control
-            button.btn(type="submit") Login
+            button.btn(type="submit" ) Login
     div.centered
         a(href="/request-reset-password") Forgot Password ?

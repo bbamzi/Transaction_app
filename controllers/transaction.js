@@ -1,4 +1,5 @@
 const Transaction = require("./../model/transactionModel");
+const catchAsync = require("./../util/catchAsync");
 
 // ##########################################  METHODS ##############################################
 

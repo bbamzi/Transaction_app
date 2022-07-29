@@ -7,9 +7,7 @@ const selectInvoiceBtn = document.querySelector(".invoice");
 const serviceType = document.querySelector("#service_type_hidden");
 const checkbox = document.querySelector("input[name=autoGenerate]");
 const paymentMethodSelect = document.getElementById("paymentMethodSelect");
-const delete_payment_detail = document.getElementById("delete_payment_detail");
 const paymentIfOther = document.getElementById("paymentIfOther");
-const editTransaction = document.getElementById("edit_transaction");
 
 addItemsBtn.addEventListener("click", function (e) {
   e.preventDefault();
@@ -96,12 +94,4 @@ checkbox.addEventListener("change", function () {
   } else {
     document.getElementById("documentNumber").value = "";
   }
-});
-
-editTransaction.addEventListener("click", (e) => {
-  document.getElementById("edit_form_fieldset").disabled = false;
-});
-
-delete_payment_detail.addEventListener("click", (e) => {
-  document.getElementById("payment_details").style.display = "none";
 });

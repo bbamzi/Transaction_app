@@ -5,18 +5,22 @@ block content
       br
       if message
         div.user-message.user-message--error  #{ message }
-      if message !== null
-        div.user-message.user-message--error  #{ message }
-      form.login-form.centered(action="/signup", method="POST")
+      form.login-form.centered(action="/signup", method="POST" id="signupForm")
         .form-control
           label(for="email") E-Mail
-          input#email(type="email", name="email")
+          input#email(type="email", name="email" required) 
         .form-control
           label(for="password") Password
-          input#password(type="password", name="password")
+          input#password(name="password", type="password", onkeyup="check();" required)
+          span#passwordMessage(style="color:red") 
         .form-control
           label(for="confirmPassword") Confirm Password
-          input#confirmPassword(type="password", name="confirmPassword")
+          input(type="password", name="confirm_password", id="confirm_password", onkeyup="check();" required)
+          span#message
           input(type="hidden", name="_csrf" , value = csrfToken )
         .form-control
-          button.btn(type="submit") Signup
+          button.btn(type="submit" ) Signup
+      script(src="/js/signup.js")
+
+
+     

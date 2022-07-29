@@ -2,6 +2,8 @@
 const path = require("path");
 const express = require("express");
 const bodyParser = require("body-parser");
+const AppError = require("./util/appError");
+const globalErrorHandler = require("./controllers/error");
 const transactionRoutes = require("./routes/transaction");
 const authenticationRoutes = require("./routes/auth");
 const errorController = require("./controllers/error");
@@ -71,8 +73,20 @@ app.use((req, res, next) => {
 // ############################################### ROUTES ##############################################
 app.use(transactionRoutes);
 app.use(authenticationRoutes);
-app.use(errorController.get404);
+// app.use(errorController.get404);
 
+app.all("*", (req, res, next) => {
+  next(
+    new AppError(
+      `Can't find ${req.protocol}://${req.get("host")}${
+        req.originalUrl
+      } on this Server! , Please Check The Url`,
+      404
+    )
+  );
+});
+
+app.use(globalErrorHandler);
 // ################################################ SERVER THINGS #######################################
 mongoose
   .connect(process.env.DATABASE_LOCAL)

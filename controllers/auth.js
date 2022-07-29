@@ -2,6 +2,7 @@ const bcrpyt = require("bcrypt");
 const User = require("./../model/userModel");
 const sendEmail = require("./../util/email");
 const crypto = require("crypto");
+const { validationResult } = require("express-validator");
 
 exports.getLogin = (req, res, next) => {
   res.render("auth/login", {
@@ -15,11 +16,12 @@ exports.postLogin = async (req, res, next) => {
   const user = await User.findOne({ email: email });
   if (!user) {
     req.flash("error", "Invalid email or password.");
+
     return res.redirect("/login");
   }
 
   const doMatch = await bcrpyt.compare(password, user.password);
-  console.log(doMatch);
+
   if (doMatch) {
     req.session.isLoggedIn = true;
     req.session.user = user;
@@ -41,23 +43,24 @@ exports.getSignup = (req, res, next) => {
 exports.postSignup = async (req, res, next) => {
   const { email, password, confirmPassword } = req.body;
   const user = await User.findOne({ email });
-  if (user) {
+
+  if (email === "") {
+    req.flash("error", "Please enter a valid email");
+  }
+  if (!user) {
+    const hashedPassword = await bcrpyt.hash(password, 12);
+    const newUser = new User({
+      email,
+      password: hashedPassword,
+      transactions: [],
+    });
+    // await newUser.save();
+    req.flash("success", "Sign Up Successful");
+    return res.redirect("/login");
+  } else {
     req.flash("error", "This Email has Already Been Used For Signup");
     return res.redirect("/signup");
   }
-  if (password !== confirmPassword) {
-    req.flash("error", "Passwords Do Not Match");
-    return res.redirect("/signup");
-  }
-  const hashedPassword = await bcrpyt.hash(password, 12);
-  const newUser = new User({
-    email,
-    password: hashedPassword,
-    transactions: [],
-  });
-  await newUser.save();
-  req.flash("success", "Sign Up Successful");
-  return res.redirect("/login");
 };
 
 exports.postLogout = (req, res, next) => {
