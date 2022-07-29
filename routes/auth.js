@@ -9,7 +9,7 @@ router.get("/login", middleware.getFlashMessage, authController.getLogin);
 router.post("/login", authController.postLogin);
 router.post("/logout", authController.postLogout);
 router.get("/signup", middleware.getFlashMessage, authController.getSignup);
-router.post("/signup", authController.postSignup);
+router.post("/signup", middleware.getFlashMessage, authController.postSignup);
 router.get("/request-reset-password", authController.getRequestResetPassword);
 router.post("/request-reset-password", authController.postRequestResetPassword);
 router.get("/password-reset/:resetToken", authController.getResetPassword);

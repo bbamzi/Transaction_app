@@ -31,7 +31,7 @@ exports.getAddTransaction = (req, res, next) => {
 };
 
 // ********************************************* POST ADD TRANSACTIONS
-exports.postAddTransaction = (req, res, next) => {
+exports.postAddTransaction = catchAsync(async (req, res, next) => {
   const {
     serviceType,
     logo,
@@ -104,19 +104,13 @@ exports.postAddTransaction = (req, res, next) => {
     serviceType === "Receipt" ? recieptTransaction : invoiceTransaction;
 
   if (req.session.isLoggedIn) {
-    transaction
-      .save()
-      .then((result) => {
-        res.redirect("/");
-      })
-      .catch((err) => {});
+    await transaction.save();
   }
 
   res.redirect("/");
-};
-
+});
 // ********************************************* GET  TRANSACTIONS
-exports.getTransactions = async (req, res, next) => {
+exports.getTransactions = catchAsync(async (req, res, next) => {
   const transactions = await Transaction.find({
     userId: req.user._id,
   }).populate("userId");
@@ -125,10 +119,10 @@ exports.getTransactions = async (req, res, next) => {
     pageTitle: "All Transactions",
     hasTransactions: transactions > 0,
   });
-};
+});
 
 // ********************************************* GET EDIT  TRANSACTIONS
-exports.getEditTransaction = async (req, res, next) => {
+exports.getEditTransaction = catchAsync(async (req, res, next) => {
   const transactionId = req.params.transactionId;
   try {
     const transaction = await Transaction.findOne({
@@ -145,9 +139,9 @@ exports.getEditTransaction = async (req, res, next) => {
       pageTitle: "Authorization Error,",
     });
   }
-};
+});
 // ********************************************* POST EDIT  TRANSACTIONS
-exports.postEditTransaction = async (req, res, next) => {
+exports.postEditTransaction = catchAsync(async (req, res, next) => {
   const {
     serviceType,
     logo,
@@ -212,9 +206,9 @@ exports.postEditTransaction = async (req, res, next) => {
 
   await transactions.save();
   res.redirect("/transactions");
-};
+});
 // ********************************************* POST DELETE TRANSACTIONS
-exports.postDeleteTransaction = async (req, res, next) => {
+exports.postDeleteTransaction = catchAsync(async (req, res, next) => {
   const transactionId = req.body.transactionId;
 
   await Transaction.deleteOne({
@@ -223,4 +217,4 @@ exports.postDeleteTransaction = async (req, res, next) => {
   });
 
   res.redirect("/transactions");
-};
+});

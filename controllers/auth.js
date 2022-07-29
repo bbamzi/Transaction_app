@@ -2,6 +2,7 @@ const bcrpyt = require("bcrypt");
 const User = require("./../model/userModel");
 const sendEmail = require("./../util/email");
 const crypto = require("crypto");
+const catchAsync = require("./../util/catchAsync");
 const { validationResult } = require("express-validator");
 
 exports.getLogin = (req, res, next) => {
@@ -11,12 +12,12 @@ exports.getLogin = (req, res, next) => {
   });
 };
 
-exports.postLogin = async (req, res, next) => {
+exports.postLogin = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
   const user = await User.findOne({ email: email });
   if (!user) {
     req.flash("error", "Invalid email or password.");
-
+    req.session.messageType = "error";
     return res.redirect("/login");
   }
 
@@ -32,7 +33,7 @@ exports.postLogin = async (req, res, next) => {
     req.flash("error", "Invalid email or password.");
     res.redirect("/login");
   }
-};
+});
 
 exports.getSignup = (req, res, next) => {
   res.render("auth/signup", {
@@ -40,13 +41,10 @@ exports.getSignup = (req, res, next) => {
   });
 };
 
-exports.postSignup = async (req, res, next) => {
-  const { email, password, confirmPassword } = req.body;
+exports.postSignup = catchAsync(async (req, res, next) => {
+  const { email, password, confirm_password } = req.body;
   const user = await User.findOne({ email });
 
-  if (email === "") {
-    req.flash("error", "Please enter a valid email");
-  }
   if (!user) {
     const hashedPassword = await bcrpyt.hash(password, 12);
     const newUser = new User({
@@ -56,12 +54,15 @@ exports.postSignup = async (req, res, next) => {
     });
     // await newUser.save();
     req.flash("success", "Sign Up Successful");
+    req.session.messageType = "success";
     return res.redirect("/login");
   } else {
-    req.flash("error", "This Email has Already Been Used For Signup");
+    req.flash("error", "This Email Already Exist");
+    req.session.formData = { email, password, confirm_password };
+    req.session.messageType = "error";
     return res.redirect("/signup");
   }
-};
+});
 
 exports.postLogout = (req, res, next) => {
   req.session.destroy(() => {
@@ -112,7 +113,7 @@ exports.tokenSent = (req, res, next) => {
   });
 };
 
-exports.getResetPassword = async (req, res, next) => {
+exports.getResetPassword = catchAsync(async (req, res, next) => {
   const resetToken = req.params.resetToken;
   const user = await User.findOne({
     passwordResetToken: resetToken,
@@ -120,7 +121,6 @@ exports.getResetPassword = async (req, res, next) => {
   });
   if (!user) {
     req.flash("error", "Expired or Invalid Token");
-
     return res.redirect("/login");
   }
 
@@ -129,9 +129,9 @@ exports.getResetPassword = async (req, res, next) => {
     userId: user._id.toString(),
     resetToken,
   });
-};
+});
 
-exports.postResetPassword = async (req, res, next) => {
+exports.postResetPassword = catchAsync(async (req, res, next) => {
   const { userId, resetToken, password, passwordConfirm } = req.body;
   const user = await User.findOne({
     _id: userId,
@@ -151,4 +151,4 @@ exports.postResetPassword = async (req, res, next) => {
   user.passwordResetTokenExpires = undefined;
   await user.save();
   return res.redirect("/");
-};
+});

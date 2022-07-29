@@ -75,18 +75,18 @@ app.use(transactionRoutes);
 app.use(authenticationRoutes);
 // app.use(errorController.get404);
 
-app.all("*", (req, res, next) => {
-  next(
-    new AppError(
-      `Can't find ${req.protocol}://${req.get("host")}${
-        req.originalUrl
-      } on this Server! , Please Check The Url`,
-      404
-    )
-  );
-});
+// app.all("*", (req, res, next) => {
+//   next(
+//     new AppError(
+//       `Can't find ${req.protocol}://${req.get("host")}${
+//         req.originalUrl
+//       } on this Server! , Please Check The Url`,
+//       404
+//     )
+//   );
+// });
 
-app.use(globalErrorHandler);
+// app.use(globalErrorHandler);
 // ################################################ SERVER THINGS #######################################
 mongoose
   .connect(process.env.DATABASE_LOCAL)

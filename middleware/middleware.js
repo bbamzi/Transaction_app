@@ -9,14 +9,13 @@ exports.isAuthenticated = (req, res, next) => {
 
 exports.getFlashMessage = (req, res, next) => {
   let message = req.flash(
-    `${"success" in req.session.flash ? "success" : "error"}`
+    `${req.session.messageType === "success" ? "success" : "error"}`
   );
-  // const messageType = `${"success" in req.session.flash ? "success" : "error"}`;
-  const messageType = "error";
+  console.log(req.session.messageType);
   if (message.length > 0) {
     message = message[0];
     res.locals.message = message;
-    res.locals.messageType = messageType;
+    res.locals.messageType = req.session.messageType;
   } else {
     message = null;
   }

@@ -4,7 +4,8 @@ block content
     main
       br
       if message
-        div.user-message.user-message--error  #{ message }
+        div(class = `user-message user-message--${messageType === "error"? "error":"success"}`)  #{ message }
+
       form.login-form.centered(action="/signup", method="POST" id="signupForm")
         .form-control
           label(for="email") E-Mail
