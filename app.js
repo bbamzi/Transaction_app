@@ -3,6 +3,7 @@ const path = require("path");
 const express = require("express");
 const bodyParser = require("body-parser");
 const AppError = require("./util/appError");
+const multer = require("multer");
 const globalErrorHandler = require("./controllers/error");
 const transactionRoutes = require("./routes/transaction");
 const authenticationRoutes = require("./routes/auth");
@@ -42,6 +43,25 @@ app.use(
     store: store,
   })
 );
+
+// ##multer
+
+const fileFilter = (req, file, cb) => {
+  if (file.mimetype === "image/png" || file.mimetype === "image/jpg") {
+    cb(null, true);
+  } else {
+    cb(null, false);
+  }
+};
+const fileStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "images");
+  },
+  filename: (req, file, cb) => {
+    cb(null, new Date().toISOString() + "-" + file.originalname);
+  },
+});
+app.use(multer({ storage: fileStorage, fileFilter }).single("logo"));
 
 // ####################### Csrf Protection Middleware
 const csrfProtection = csrf();

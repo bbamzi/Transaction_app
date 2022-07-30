@@ -32,81 +32,49 @@ exports.getAddTransaction = (req, res, next) => {
 
 // ********************************************* POST ADD TRANSACTIONS
 exports.postAddTransaction = catchAsync(async (req, res, next) => {
-  const {
-    serviceType,
-    logo,
-    brandName,
-    dateIssued,
-    dueDate,
-    documentNumber,
-    recipientName,
-    billTo,
-    paymentMethod,
-    paymentIfOther,
-    invoice_account_number,
-    invoice_account_name,
-    invoice_bank_Name,
-    description,
-    unit,
-    price,
-    currency,
-    shippingFee,
-    vat,
-    discount,
-    sub_total,
-    total,
-    clientSignature,
-  } = req.body;
-
-  const recieptTransaction = new Transaction({
-    serviceType,
-    logo,
-    brandName,
-    dateIssued,
-    documentNumber,
-    recipientName,
-    paymentMethod: paymentMethod === "other" ? paymentIfOther : paymentMethod,
-    items: itemPopulate(description, unit, price),
-    currency,
-    shippingFee,
-    vat,
-    discount,
-    sub_total,
-    total,
-    clientSignature,
+  const getLogo = () => {
+    const logo = req.file;
+    if (!logo) {
+      return "";
+    } else {
+      return logo.path;
+    }
+  };
+  const transaction = new Transaction({
+    serviceType: req.body.serviceType,
+    logo: getLogo(),
+    brandName: req.body.brandName,
+    documentNumber: req.body.documentNumber,
+    dateIssued: req.body.dateIssued,
+    recipientName:
+      req.body.serviceType === "Receipt" ? req.body.recipientName : null,
+    billTo: req.body.serviceType === "Invoice" ? req.body.billTo : null,
+    dueDate: req.body.serviceType === "Invoice" ? req.body.dueDate : null,
+    paymentMethod:
+      req.body.paymentMethod === "other"
+        ? req.body.paymentIfOther
+        : req.body.paymentMethod,
+    items: itemPopulate(req.body.description, req.body.unit, req.body.price),
+    invoice_account_number:
+      req.body.serviceType === "Invoice"
+        ? req.body.invoice_account_number
+        : null,
+    invoice_account_name:
+      req.body.serviceType === "Invoice" ? req.body.invoice_account_name : null,
+    invoice_bank_Name:
+      req.body.serviceType === "Invoice" ? req.body.invoice_bank_Name : null,
+    currency: req.body.currency,
+    shippingFee: req.body.shippingFee,
+    vat: req.body.vat,
+    discount: req.body.discount,
+    sub_total: req.body.sub_total,
+    total: req.body.total,
+    clientSignature: req.body.clientSignature,
     userId: req.session.isLoggedIn ? req.session.user._id : null,
   });
-
-  const invoiceTransaction = new Transaction({
-    serviceType,
-    logo,
-    brandName,
-    dateIssued,
-    documentNumber,
-    billTo,
-    dueDate,
-    paymentMethod: paymentMethod === "other" ? paymentIfOther : paymentMethod,
-    invoice_account_number,
-    invoice_account_name,
-    invoice_bank_Name,
-    items: itemPopulate(description, unit, price),
-    currency,
-    shippingFee,
-    vat,
-    discount,
-    sub_total,
-    total,
-    clientSignature,
-    userId: req.session.isLoggedIn ? req.session.user._id : null,
-  });
-
-  const transaction =
-    serviceType === "Receipt" ? recieptTransaction : invoiceTransaction;
-
   if (req.session.isLoggedIn) {
     await transaction.save();
   }
-
   res.redirect("/");
 });
 // ********************************************* GET  TRANSACTIONS
@@ -142,65 +110,47 @@ exports.getEditTransaction = catchAsync(async (req, res, next) => {
 });
 // ********************************************* POST EDIT  TRANSACTIONS
 exports.postEditTransaction = catchAsync(async (req, res, next) => {
-  const {
-    serviceType,
-    logo,
-    brandName,
-    dateIssued,
-    dueDate,
-    documentNumber,
-    recipientName,
-    billTo,
-    paymentMethod,
-    paymentIfOther,
-    invoice_account_number,
-    invoice_account_name,
-    invoice_bank_Name,
-    description,
-    unit,
-    price,
-    currency,
-    shippingFee,
-    vat,
-    discount,
-    sub_total,
-    total,
-    clientSignature,
-  } = req.body;
-
-  const getT = function (t) {
-    t.serviceType = serviceType;
-    t.logo = logo;
-    t.brandName = brandName;
-    t.dateIssued = dateIssued;
-    t.documentNumber = documentNumber;
-    t.items = itemPopulate(description, unit, price);
-    t.currency = currency;
-    t.shippingFee = shippingFee;
-    t.vat = vat;
-    t.discount = discount;
-    t.sub_total = sub_total;
-    t.total = total;
-    t.clientSignature = clientSignature;
-
-    if (serviceType === "Receipt") {
-      t.recipientName = recipientName;
-      t.paymentMethod =
-        paymentMethod === "other" ? paymentIfOther : paymentMethod;
+  const getLogo = () => {
+    const logo = req.file;
+    if (!logo) {
+      return "";
     } else {
-      t.invoice_account_number = invoice_account_number;
-      t.invoice_account_name = invoice_account_name;
-      t.invoice_bank_Name = invoice_bank_Name;
-      t.dueDate = dueDate; //invoice
-      t.billTo = billTo;
+      return logo.path;
     }
-    return t;
   };
-
   const transaction = await Transaction.findOne({
     _id: req.body.transactionId,
     userId: req.user._id,
   });
+  const getT = function (t) {
+    t.logo = req.file ? getLogo() : transaction.logo;
+    t.brandName = req.body.brandName;
+    t.dateIssued = req.body.dateIssued;
+    t.documentNumber = req.body.documentNumber;
+    t.items = itemPopulate(req.body.description, req.body.unit, req.body.price);
+    t.currency = req.body.currency;
+    t.shippingFee = req.body.shippingFee;
+    t.vat = req.body.vat;
+    t.discount = req.body.discount;
+    t.sub_total = req.body.sub_total;
+    t.total = req.body.total;
+    t.clientSignature = req.body.clientSignature;
+
+    if (req.body.serviceType === "Receipt") {
+      t.recipientName = req.body.recipientName;
+      t.paymentMethod =
+        req.body.paymentMethod === "other"
+          ? req.body.paymentIfOther
+          : req.body.paymentMethod;
+    } else {
+      t.invoice_account_number = req.body.invoice_account_number;
+      t.invoice_account_name = req.body.invoice_account_name;
+      t.invoice_bank_Name = req.body.invoice_bank_Name;
+      t.dueDate = req.body.dueDate; //invoice
+      t.billTo = req.body.billTo;
+    }
+    return t;
+  };
 
   const transactions = getT(transaction);
 
