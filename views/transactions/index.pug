@@ -17,10 +17,11 @@ block content
   
     .form-control
       // logo
-      div(class="logoimg")
-      img(src=`images/${transaction.logo}`, alt="")
+      if currentView === "editTransaction"   
+        div.card__image
+          img(src=`/${transaction.logo}`, alt="A Book" style="width:150px; height:150px;  align-items: center;")
       .logo
-        label #{currentView === "editTransaction" ? "Change Logo" : "Upload Logo"} 
+        label #{currentView === "editTransaction" ? "Change Logo" : "Upload Logo"}  
         input(type="file", name="logo" value =  currentView === "editTransaction" ? transaction.logo : "") 
         //- input(type="file", name="logo" ) 
       // receipt and invoice

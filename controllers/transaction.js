@@ -1,3 +1,4 @@
+const AppError = require("../util/appError");
 const Transaction = require("./../model/transactionModel");
 const catchAsync = require("./../util/catchAsync");
 
@@ -82,6 +83,12 @@ exports.getTransactions = catchAsync(async (req, res, next) => {
   const transactions = await Transaction.find({
     userId: req.user._id,
   }).populate("userId");
+
+  if (!transactions) {
+    return next(
+      new AppError("You Are Not Authorized To Access This Page", 401)
+    );
+  }
   res.render("transactions/transactions", {
     transactions,
     pageTitle: "All Transactions",
@@ -92,21 +99,20 @@ exports.getTransactions = catchAsync(async (req, res, next) => {
 // ********************************************* GET EDIT  TRANSACTIONS
 exports.getEditTransaction = catchAsync(async (req, res, next) => {
   const transactionId = req.params.transactionId;
-  try {
-    const transaction = await Transaction.findOne({
-      _id: transactionId,
-      userId: req.user._id,
-    });
-    res.render("transactions/index", {
-      currentView: "editTransaction",
-      transaction,
-      pageTitle: transaction.documentNumber,
-    });
-  } catch {
-    res.render("transactions/authError", {
-      pageTitle: "Authorization Error,",
-    });
+  const transaction = await Transaction.findOne({
+    _id: transactionId,
+    userId: req.user._id,
+  });
+
+  if (!transaction) {
+    return next(new AppError("Transaction not found", 400));
   }
+
+  res.render("transactions/index", {
+    currentView: "editTransaction",
+    transaction,
+    pageTitle: transaction.documentNumber,
+  });
 });
 // ********************************************* POST EDIT  TRANSACTIONS
 exports.postEditTransaction = catchAsync(async (req, res, next) => {
@@ -159,12 +165,21 @@ exports.postEditTransaction = catchAsync(async (req, res, next) => {
 });
 // ********************************************* POST DELETE TRANSACTIONS
 exports.postDeleteTransaction = catchAsync(async (req, res, next) => {
+  if (!req.session.isLoggedIn) {
+    return next(
+      new AppError(
+        "You Are Not Authorized For That Action, Please Log in .",
+        403
+      )
+    );
+  }
   const transactionId = req.body.transactionId;
 
   await Transaction.deleteOne({
     _id: transactionId,
     userId: req.user._id,
   });
-
+  req.flash("success", "Successfully Deleted");
+  req.session.messageType = "success";
   res.redirect("/transactions");
 });

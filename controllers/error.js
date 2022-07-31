@@ -1,13 +1,16 @@
-// exports.get404 = (req, res, next) => {
-//   res.status(404).render("404", {
-//     pageTitle: "Page Not Found",
-//   });
-// };
-
 module.exports = (err, req, res, next) => {
   err.statusCode = err.statusCode || 500;
   err.status = err.status || "error";
-  res
-    .status(err.statusCode)
-    .render(`${err.statusCode}`, { errStatus: err.status });
+  // const errorChecker = (code) => {
+  //   if (code === 400) {
+  //     return { statusCode: err.statusCode, errMessage: err.message };
+  //   }
+  // };
+  res.status(err.statusCode).render("error", {
+    statusCode: err.statusCode === 403 ? 401 : err.statusCode,
+    errMessage:
+      err.statusCode === 403
+        ? "You Are Not Authorized For That Action, Please Log in ."
+        : err.message,
+  });
 };

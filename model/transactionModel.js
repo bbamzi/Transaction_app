@@ -10,6 +10,7 @@ const transactionSchema = new mongoose.Schema({
   brandName: {
     type: String,
     trim: true,
+    required: [true, "You Need To Input A Name"],
   },
   dateIssued: { type: Date },
   dueDate: { type: Date },

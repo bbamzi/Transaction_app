@@ -12,7 +12,7 @@ block content
                         header.card__header
                             h1.transaction__title #{transaction.serviceType}
                         div.card__image
-                            img(src=`/${transaction.logo}`, alt="A Book")
+                            img(src=`/${transaction.logo}`, alt="A Book" style="width:150px; height:150px;  align-items: center;")
                         div.card__content
                             h2.transaction__price #{transaction.currency.symbol}#{transaction.total}
                             p.transaction__description #{transaction.recipientName}

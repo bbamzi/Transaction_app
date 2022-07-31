@@ -2,6 +2,8 @@ const { validationResult } = require("express-validator");
 
 exports.isAuthenticated = (req, res, next) => {
   if (!req.session.isLoggedIn) {
+    req.session.messageType = "error";
+    req.flash("error", "You Need To Be Logged in To View That Page");
     return res.redirect("/login");
   }
   next();

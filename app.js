@@ -35,6 +35,8 @@ app.set("views", "views");
 // # body Parser
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, "public")));
+app.use("/images", express.static(path.join(__dirname, "images")));
+
 app.use(
   session({
     secret: "secretssss",
@@ -95,19 +97,20 @@ app.use(transactionRoutes);
 app.use(authenticationRoutes);
 // app.use(errorController.get404);
 
-// app.all("*", (req, res, next) => {
-//   next(
-//     new AppError(
-//       `Can't find ${req.protocol}://${req.get("host")}${
-//         req.originalUrl
-//       } on this Server! , Please Check The Url`,
-//       404
-//     )
-//   );
-// });
+app.all("*", (req, res, next) => {
+  next(
+    new AppError(
+      `Can't find ${req.protocol}://${req.get("host")}${
+        req.originalUrl
+      } on this Server! , Please Check The Url`,
+      404
+    )
+  );
+});
 
-// app.use(globalErrorHandler);
-// ################################################ SERVER THINGS #######################################
+app.use(globalErrorHandler);
+
+// // ################################################ SERVER THINGS #######################################
 mongoose
   .connect(process.env.DATABASE_LOCAL)
   .then((result) => {
